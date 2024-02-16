@@ -1,6 +1,6 @@
 import { NandGate } from "..";
 import { BitArray, Gate } from "../../..";
-import { MultiBitAnd } from "../../../derived/and/multi/bit";
+import { MultiBitAndGate } from "../../../derived/and/multi/bit";
 import { NotGate } from "../../../derived/not";
 import { MultiBitNotGate } from "../../../derived/not/multi/bit";
 import { MultiBitNandGate } from "./bit";
@@ -12,7 +12,7 @@ export class MultiWayNandGate extends Gate<
   MultiWayNandInputs,
   MultiWayNandOutputs
 > {
-  private andGates: MultiBitAnd[];
+  private andGates: MultiBitAndGate[];
   private notGate: MultiBitNotGate;
   constructor(private bitLength: number, private ways: number) {
     super();
@@ -20,7 +20,7 @@ export class MultiWayNandGate extends Gate<
     this.notGate = new MultiBitNotGate(bitLength);
     this.andGates = new Array(ways - 1)
       .fill(0)
-      .map(() => new MultiBitAnd(bitLength));
+      .map(() => new MultiBitAndGate(bitLength));
   }
 
   eval(inputs: MultiWayNandInputs): MultiWayNandOutputs {

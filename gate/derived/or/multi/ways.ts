@@ -1,27 +1,32 @@
 import { OrGate } from "..";
 import { Bit, BitArray, Gate } from "../../..";
+import { MultiBitOrGate } from "./bit";
 
-type Inputs = [BitArray];
-type Outputs = [Bit];
+type Inputs = BitArray[];
+type Outputs = [BitArray];
 
 export class MultiWayOrGate extends Gate<Inputs, Outputs> {
-  private gates: OrGate[];
-  constructor(private length: number) {
+  private gates: MultiBitOrGate[];
+  constructor(private bitLength: number, private ways: number) {
     super();
-    this.gates = new Array(length).fill(0).map(() => new OrGate());
+    this.gates = new Array(ways)
+      .fill(0)
+      .map(() => new MultiBitOrGate(bitLength));
   }
 
   override eval(inputs: Inputs): Outputs {
-    if (inputs[0].length !== this.length)
+    if (inputs.length !== this.ways)
       throw new Error(
-        `multi bit gate length error, expected (${this.length}) but got (${inputs[0].length})`
+        `multi bit gate length error, expected (${this.ways}) but got (${inputs[0].length})`
       );
 
-    let res = inputs[0][0];
-    for (let i = 1; i < this.length; i++) {
-      [res] = this.gates[i].eval([res, inputs[0][i]]);
+    let intermidiate_result = inputs[0];
+
+    for (let i = 1; i < this.ways; i++) {
+      const orGate = this.gates[i];
+      intermidiate_result = orGate.eval([intermidiate_result, inputs[i]])[0];
     }
 
-    return [res];
+    return [intermidiate_result];
   }
 }

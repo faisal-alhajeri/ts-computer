@@ -1,6 +1,6 @@
 import { Bit, BitArray } from ".";
 import { AndGate } from "./derived/and";
-import { MultiBitAnd as MultiBitAndGate } from "./derived/and/multi/bit";
+import { MultiBitAndGate as MultiBitAndGate } from "./derived/and/multi/bit";
 import { DeMultiplexerGate } from "./derived/demultiplexer";
 import { MultiBitDeMultiplexerGate } from "./derived/demultiplexer/multi/bit";
 import { MultiWayDeMultiplexerGate } from "./derived/demultiplexer/multi/ways";
@@ -123,10 +123,10 @@ describe("multibit gates", () => {
 describe("multi way", () => {
   test("multi way or", () => {
     expect.assertions(4);
-    const gate = new MultiWayOrGate(5);
-    expect(gate.eval([[1, 0, 0, 1, 0]])).toEqual([1]);
-    expect(gate.eval([[0, 0, 0, 1, 0]])).toEqual([1]);
-    expect(gate.eval([[0, 0, 0, 0, 0]])).toEqual([0]);
+    const gate = new MultiWayOrGate(1, 5);
+    expect(gate.eval([[1], [0], [0], [1], [0]])).toEqual([[1]]);
+    expect(gate.eval([[0], [0], [0], [1], [0]])).toEqual([[1]]);
+    expect(gate.eval([[0], [0], [0], [0], [0]])).toEqual([[0]]);
     try {
       gate.eval([[0, 0, 0, 0]]);
     } catch (e) {

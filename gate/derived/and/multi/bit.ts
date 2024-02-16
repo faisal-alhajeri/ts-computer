@@ -4,7 +4,7 @@ import { AndGate } from "..";
 type Inputs = [BitArray, BitArray];
 type Outputs = [BitArray];
 
-export class MultiBitAnd extends Gate<Inputs, Outputs> {
+export class MultiBitAndGate extends Gate<Inputs, Outputs> {
   private gates: AndGate[];
   constructor(private length: number) {
     super();
