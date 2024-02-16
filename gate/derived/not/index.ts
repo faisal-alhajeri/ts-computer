@@ -1,12 +1,12 @@
 import { Bit, Gate } from "../..";
+import { NandGate } from "../../base/nand";
 
 type Inputs = [Bit];
 type Outputs = [Bit];
 
 export class NotGate extends Gate<Inputs, Outputs> {
   override eval(inputs: Inputs): Outputs {
-    if (inputs[0] === 0) return [1];
-
-    return [0];
+    const nandGate = new NandGate();
+    return nandGate.eval([inputs[0], inputs[0]]);
   }
 }
