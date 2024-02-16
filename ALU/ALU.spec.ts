@@ -19,8 +19,8 @@ const yMinus1Control: ALUControl = [1, 1, 0, 0, 1, 0];
 const xPlusYControl: ALUControl = [0, 0, 0, 0, 1, 0];
 const xMinusYControl: ALUControl = [0, 1, 0, 0, 1, 1];
 const YMinusXControl: ALUControl = [0, 0, 0, 1, 1, 1];
-const YAndXControl: ALUControl = [0, 0, 0, 0, 0, 0];
-const YorXControl: ALUControl = [0, 1, 0, 1, 0, 1];
+const XAndYControl: ALUControl = [0, 0, 0, 0, 0, 0];
+const XOrYControl: ALUControl = [0, 1, 0, 1, 0, 1];
 
 type ALUPair = { inputs: ALUInputs; outputs: ALUOutputs };
 
@@ -573,6 +573,291 @@ describe("ALU gate", () => {
           yMinus1Control,
         ],
         outputs: [[[1, 1, 1, 0]], [0, 1]],
+      },
+    ];
+
+    testPairs({ pairs });
+  });
+
+  test("x plus y operation", () => {
+    const pairs: ALUPair[] = [
+      {
+        inputs: [
+          [
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+          ],
+          xPlusYControl,
+        ],
+        outputs: [[[0, 0, 0, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 0, 1],
+            [0, 0, 1, 1],
+          ],
+          xPlusYControl,
+        ],
+        outputs: [[[1, 0, 0, 0]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [1, 0, 1, 0],
+            [0, 0, 1, 1],
+          ],
+          xPlusYControl,
+        ],
+        outputs: [[[1, 1, 0, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+          ],
+          xPlusYControl,
+        ],
+        outputs: [[[1, 1, 1, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [1, 1, 1, 1],
+            [0, 1, 1, 0],
+          ],
+          xPlusYControl,
+        ],
+        outputs: [[[0, 1, 0, 1]], [0, 0]],
+      },
+    ];
+
+    testPairs({ pairs });
+  });
+
+  test("x minus y operation", () => {
+    const pairs: ALUPair[] = [
+      {
+        inputs: [
+          [
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+          ],
+          xMinusYControl,
+        ],
+        outputs: [[[0, 0, 0, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 0, 1],
+            [0, 0, 1, 1],
+          ],
+          xMinusYControl,
+        ],
+        outputs: [[[0, 0, 1, 0]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [1, 0, 1, 0],
+            [0, 0, 1, 1],
+          ],
+          xMinusYControl,
+        ],
+        outputs: [[[0, 1, 1, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+          ],
+          xMinusYControl,
+        ],
+        outputs: [[[1, 1, 0, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [1, 1, 1, 1],
+            [0, 1, 1, 0],
+          ],
+          xMinusYControl,
+        ],
+        outputs: [[[1, 0, 0, 1]], [0, 1]],
+      },
+    ];
+
+    testPairs({ pairs });
+  });
+
+  test("y minus x operation", () => {
+    const pairs: ALUPair[] = [
+      {
+        inputs: [
+          [
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+          ],
+          YMinusXControl,
+        ],
+        outputs: [[[1, 1, 1, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 0, 1],
+            [0, 0, 1, 1],
+          ],
+          YMinusXControl,
+        ],
+        outputs: [[[1, 1, 1, 0]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [1, 0, 1, 0],
+            [0, 0, 1, 1],
+          ],
+          YMinusXControl,
+        ],
+        outputs: [[[1, 0, 0, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+          ],
+          YMinusXControl,
+        ],
+        outputs: [[[0, 0, 1, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [1, 1, 1, 1],
+            [0, 1, 1, 0],
+          ],
+          YMinusXControl,
+        ],
+        outputs: [[[0, 1, 1, 1]], [0, 0]],
+      },
+    ];
+
+    testPairs({ pairs });
+  });
+
+  test("x and y operation", () => {
+    const pairs: ALUPair[] = [
+      {
+        inputs: [
+          [
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+          ],
+          XAndYControl,
+        ],
+        outputs: [[[0, 0, 0, 0]], [1, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 0, 1],
+            [0, 0, 1, 1],
+          ],
+          XAndYControl,
+        ],
+        outputs: [[[0, 0, 0, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [1, 0, 1, 0],
+            [0, 0, 1, 1],
+          ],
+          XAndYControl,
+        ],
+        outputs: [[[0, 0, 1, 0]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+          ],
+          XAndYControl,
+        ],
+        outputs: [[[0, 0, 0, 0]], [1, 0]],
+      },
+      {
+        inputs: [
+          [
+            [1, 1, 1, 1],
+            [0, 1, 1, 0],
+          ],
+          XAndYControl,
+        ],
+        outputs: [[[0, 1, 1, 0]], [0, 0]],
+      },
+    ];
+
+    testPairs({ pairs });
+  });
+
+  test("x or y operation", () => {
+    const pairs: ALUPair[] = [
+      {
+        inputs: [
+          [
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+          ],
+          XOrYControl,
+        ],
+        outputs: [[[0, 0, 0, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 0, 1],
+            [0, 0, 1, 1],
+          ],
+          XOrYControl,
+        ],
+        outputs: [[[0, 1, 1, 1]], [0, 0]],
+      },
+      {
+        inputs: [
+          [
+            [1, 0, 1, 0],
+            [0, 0, 1, 1],
+          ],
+          XOrYControl,
+        ],
+        outputs: [[[1, 0, 1, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [0, 1, 1, 0],
+            [1, 0, 0, 1],
+          ],
+          XOrYControl,
+        ],
+        outputs: [[[1, 1, 1, 1]], [0, 1]],
+      },
+      {
+        inputs: [
+          [
+            [1, 1, 1, 1],
+            [0, 1, 1, 0],
+          ],
+          XOrYControl,
+        ],
+        outputs: [[[1, 1, 1, 1]], [0, 1]],
       },
     ];
 
