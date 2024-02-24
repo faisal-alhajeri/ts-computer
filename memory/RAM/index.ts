@@ -40,7 +40,7 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
 
   //   private lastResultMultiplexer: MultiplexerGate = new MultiplexerGate();
 
-  eval(inputs: RAMInputs): RAMOutputs {
+  async eval(inputs: RAMInputs): Promise<RAMOutputs> {
     const [inBits, load, address, clock] = inputs;
 
     if (inBits.length !== this.bitLength) {
@@ -49,25 +49,21 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
       );
     }
 
-    const loadAfterDemultiplexer: BitArray[] = this.loadDemultiplexer.eval([
-      [load],
-      address,
-    ]);
+    const loadAfterDemultiplexer: BitArray[] =
+      await this.loadDemultiplexer.eval([[load], address]);
 
-    const resultOfRegisterIn: BitArray[] = [];
-    for (let i = 0; i < this.registers.length; i++) {
-      const toLoad: Bit = loadAfterDemultiplexer[i][0];
-      resultOfRegisterIn[i] = this.registers[i].eval([
-        inBits,
-        toLoad,
-        clock,
-      ])[0];
-    }
+    const resultOfRegisterIn: BitArray[] = await Promise.all(
+      this.registers.map(
+        async (gate, idx) =>
+          await gate
+            .eval([inBits, loadAfterDemultiplexer[idx][0], clock])
+            .then(([bits]) => bits)
+      )
+    );
 
-    const afreMulti: BitArray = this.outPutMultiplexer.eval([
-      resultOfRegisterIn,
-      address,
-    ])[0];
+    const afreMulti: BitArray = await this.outPutMultiplexer
+      .eval([resultOfRegisterIn, address])
+      .then(([bits]) => bits);
 
     return [afreMulti];
   }

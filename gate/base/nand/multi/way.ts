@@ -23,7 +23,7 @@ export class MultiWayNandGate extends Gate<
       .map(() => new MultiBitAndGate(bitLength));
   }
 
-  eval(inputs: MultiWayNandInputs): MultiWayNandOutputs {
+  async eval(inputs: MultiWayNandInputs): Promise<MultiWayNandOutputs> {
     if (inputs.length !== this.ways) {
       throw new Error(
         `number of inputs doesnt match number of ways, ways=${this.ways} inputs=${inputs.length}`
@@ -33,9 +33,11 @@ export class MultiWayNandGate extends Gate<
     let intermidate_result: BitArray = inputs[0];
     for (let i = 1; i < inputs.length; i++) {
       const andGate = this.andGates[i];
-      intermidate_result = andGate.eval([intermidate_result, inputs[i]])[0];
+      intermidate_result = (
+        await andGate.eval([intermidate_result, inputs[i]])
+      )[0];
     }
 
-    return this.notGate.eval([intermidate_result]);
+    return await this.notGate.eval([intermidate_result]);
   }
 }

@@ -4,7 +4,7 @@ type Inputs = [[Bit], Bit];
 type Outputs = [Bit, Bit];
 
 export class DeMultiplexerGate extends Gate<Inputs, Outputs> {
-  override eval(inputs: Inputs): Outputs {
+  override async eval(inputs: Inputs): Promise<Outputs> {
     const res: Outputs = [0, 0];
 
     res[inputs[1]] = inputs[0][0];

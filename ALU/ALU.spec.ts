@@ -27,14 +27,14 @@ type ALUPair = { inputs: ALUInputs; outputs: ALUOutputs };
 describe("ALU gate", () => {
   const alu = new ALU(4);
 
-  function testPairs({ pairs }: { pairs: ALUPair[] }) {
+  async function testPairs({ pairs }: { pairs: ALUPair[] }) {
     for (const pair of pairs) {
-      const out = alu.eval(pair.inputs);
+      const out = await alu.eval(pair.inputs);
       expect(out).toEqual(pair.outputs);
     }
   }
 
-  test("zero operation", () => {
+  test("zero operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -58,24 +58,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
-
-    // const inputs: ALUInputs = [
-    //   [
-    //     [1, 1, 1, 0],
-    //     [0, 1, 0, 1],
-    //   ],
-    //   zeroControl,
-    // ];
-
-    // const [[res], [zr, ng]] = alu.eval(inputs);
-
-    // expect(res).toEqual([0, 0, 0, 0]);
-    // expect(zr).toEqual(1);
-    // expect(ng).toEqual(0);
+    await testPairs({ pairs });
   });
 
-  test("one operation", () => {
+  test("one operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -99,10 +85,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("ng one operation", () => {
+  test("ng one operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -126,10 +112,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x operation", () => {
+  test("x operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -163,10 +149,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("y operation", () => {
+  test("y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -200,10 +186,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("not x operation", () => {
+  test("not x operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -247,10 +233,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("not y operation", () => {
+  test("not y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -294,10 +280,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("minus x operation", () => {
+  test("minus x operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -341,10 +327,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("minus y operation", () => {
+  test("minus y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -388,10 +374,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x plus 1 operation", () => {
+  test("x plus 1 operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -435,10 +421,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("y plus 1 operation", () => {
+  test("y plus 1 operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -482,10 +468,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x minus 1 operation", () => {
+  test("x minus 1 operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -529,10 +515,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("y minus 1 operation", () => {
+  test("y minus 1 operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -576,10 +562,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x plus y operation", () => {
+  test("x plus y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -633,10 +619,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x minus y operation", () => {
+  test("x minus y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -690,10 +676,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("y minus x operation", () => {
+  test("y minus x operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -747,10 +733,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x and y operation", () => {
+  test("x and y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -804,10 +790,10 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 
-  test("x or y operation", () => {
+  test("x or y operation", async () => {
     const pairs: ALUPair[] = [
       {
         inputs: [
@@ -861,6 +847,6 @@ describe("ALU gate", () => {
       },
     ];
 
-    testPairs({ pairs });
+    await testPairs({ pairs });
   });
 });

@@ -13,77 +13,114 @@ export type ALUInputs = [[BitArray, BitArray], ALUControl];
 export type ALUOutputs = [[BitArray], [Bit, Bit]];
 
 export class ALU extends Gate<ALUInputs, ALUOutputs> {
-  constructor(private length: number) {
+  private zxGate: MultiWayDeMultiplexerGate;
+  private negateZxGate: MultiBitNotGate;
+  private nxGate: MultiWayMultiplexerGate;
+
+  private zyGate: MultiWayDeMultiplexerGate;
+  private negateZyGate: MultiBitNotGate;
+  private nyGate: MultiWayMultiplexerGate;
+
+  private additionXYGate: AdditionGate;
+  private andXYGate: MultiBitAndGate; // logic add
+
+  private fGate: MultiWayMultiplexerGate;
+  private negateFGate: MultiBitNotGate;
+  private nGate: MultiWayMultiplexerGate;
+
+  private isNotZeroOrGate: MultiWayOrGate;
+  private negateIsNotZero: NotGate;
+
+  constructor(private bitLength: number) {
     super();
+    this.zxGate = new MultiWayDeMultiplexerGate(bitLength, 1);
+    this.negateZxGate = new MultiBitNotGate(bitLength);
+    this.nxGate = new MultiWayMultiplexerGate(bitLength, 1);
+
+    this.zyGate = new MultiWayDeMultiplexerGate(bitLength, 1);
+    this.negateZyGate = new MultiBitNotGate(bitLength);
+    this.nyGate = new MultiWayMultiplexerGate(bitLength, 1);
+
+    this.additionXYGate = new AdditionGate(bitLength);
+    this.andXYGate = new MultiBitAndGate(bitLength);
+
+    this.fGate = new MultiWayMultiplexerGate(bitLength, 1);
+    this.negateFGate = new MultiBitNotGate(bitLength);
+    this.nGate = new MultiWayMultiplexerGate(bitLength, 1);
+
+    this.isNotZeroOrGate = new MultiWayOrGate(1, bitLength);
+    this.negateIsNotZero = new NotGate();
   }
 
-  eval(inputs: ALUInputs): ALUOutputs {
+  async eval(inputs: ALUInputs): Promise<ALUOutputs> {
     const [[x, y], [zx, nx, zy, ny, f, n]] = inputs;
 
-    if (x.length !== this.length)
+    if (x.length !== this.bitLength)
       throw new Error(
-        `x have incorrect length, is (${x.length}) but should be (${this.length})`
+        `x have incorrect length, is (${x.length}) but should be (${this.bitLength})`
       );
 
-    if (y.length !== this.length)
+    if (y.length !== this.bitLength)
       throw new Error(
-        `y have incorrect length, is (${y.length}) but should be (${this.length})`
+        `y have incorrect length, is (${y.length}) but should be (${this.bitLength})`
       );
 
     // calculate if zx or pass x as it is
-    const afterZx = new MultiWayDeMultiplexerGate(this.length, 1).eval([
-      x,
-      [zx],
-    ])[0];
+    const afterZx = await this.zxGate.eval([x, [zx]]).then(([bits]) => bits);
 
     // calculate the nigation if x so if flag (nx) then we will pass its value
-    const negateZX = new MultiBitNotGate(this.length).eval([afterZx])[0];
+    const negateZX = await this.negateZxGate
+      .eval([afterZx])
+      .then(([bits]) => bits);
 
     // choose between the values (negateZx) and (afterZx) from flag (nx)
-    const afterNx = new MultiWayMultiplexerGate(this.length, 1).eval([
-      [afterZx, negateZX],
-      [nx],
-    ])[0];
+    const afterNx = await this.nxGate
+      .eval([[afterZx, negateZX], [nx]])
+      .then(([bits]) => bits);
 
     // calculate if zy or pass y as it is
-    const afterZy = new MultiWayDeMultiplexerGate(this.length, 1).eval([
-      y,
-      [zy],
-    ])[0];
+    const afterZy = await this.zyGate.eval([y, [zy]]).then(([bits]) => bits);
 
     // calculate the nigation if y so if flag (ny) then we will pass its value
-    const negateZy = new MultiBitNotGate(this.length).eval([afterZy])[0];
+    const negateZy = await this.negateZyGate
+      .eval([afterZy])
+      .then(([bits]) => bits);
 
     // choose between the values (negateZy) and (afterZy) from flag (ny)
-    const afterNy = new MultiWayMultiplexerGate(this.length, 1).eval([
-      [afterZy, negateZy],
-      [ny],
-    ])[0];
+    const afterNy = await this.nyGate
+      .eval([[afterZy, negateZy], [ny]])
+      .then(([bits]) => bits);
 
-    const additionXY = new AdditionGate(this.length).eval([
-      afterNx,
-      afterNy,
-    ])[0];
-    const andXY = new MultiBitAndGate(this.length).eval([afterNx, afterNy])[0];
+    const additionXY = await this.additionXYGate
+      .eval([afterNx, afterNy])
+      .then(([bits]) => bits);
 
-    const afterF = new MultiWayMultiplexerGate(this.length, 1).eval([
-      [andXY, additionXY],
-      [f],
-    ])[0];
+    const andXY = await this.andXYGate
+      .eval([afterNx, afterNy])
+      .then(([bits]) => bits);
 
-    const negateAfterF = new MultiBitNotGate(this.length).eval([afterF])[0];
+    const afterF = await this.fGate
+      .eval([[andXY, additionXY], [f]])
+      .then(([bits]) => bits);
 
-    const afterN = new MultiWayMultiplexerGate(this.length, 1).eval([
-      [afterF, negateAfterF],
-      [n],
-    ])[0];
+    const negateAfterF = await this.negateFGate
+      .eval([afterF])
+      .then(([bits]) => bits);
+
+    const afterN = await this.nGate
+      .eval([[afterF, negateAfterF], [n]])
+      .then(([bits]) => bits);
 
     // just for convintion will name it (out)
     const out = afterN;
 
-    const zr = new NotGate().eval([
-      new MultiWayOrGate(1, this.length).eval(out.map((bit) => [bit]))[0][0],
-    ])[0];
+    const zr = await this.negateIsNotZero
+      .eval([
+        await this.isNotZeroOrGate
+          .eval(out.map((bit) => [bit]))
+          .then(([[bit]]) => bit),
+      ])
+      .then(([bit]) => bit);
 
     const ng = out[0];
 

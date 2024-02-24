@@ -2,7 +2,7 @@ import { DFF } from ".";
 import { Bit } from "../../gate";
 
 describe("dff", () => {
-  test("dff saves vales and export it in next eval", () => {
+  test("dff saves vales and export it in next eval", async () => {
     const dff = new DFF();
     const inputs: Bit[] = [
       1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,
@@ -11,24 +11,24 @@ describe("dff", () => {
     const realOutputs: Bit[] = [];
     let clock: Bit = 0;
     for (const i of inputs) {
-      realOutputs.push(dff.eval([i, clock])[0]);
+      realOutputs.push(await dff.eval([i, clock]).then(([bit]) => bit));
       clock = ((clock + 1) % 2) as Bit;
     }
 
     expect(realOutputs).toEqual(expextedOutputs);
   });
 
-  test("giving same clock doesnt change the internal dff value", () => {
+  test("giving same clock doesnt change the internal dff value", async () => {
     const dff = new DFF();
-    expect(dff.eval([1, 0])).toEqual([0]);
-    expect(dff.eval([0, 1])).toEqual([1]);
-    expect(dff.eval([1, 1])).toEqual([1]);
-    expect(dff.eval([1, 1])).toEqual([1]);
-    expect(dff.eval([1, 0])).toEqual([0]);
-    expect(dff.eval([0, 0])).toEqual([0]);
-    expect(dff.eval([1, 0])).toEqual([0]);
-    expect(dff.eval([0, 0])).toEqual([0]);
-    expect(dff.eval([0, 1])).toEqual([1]);
-    expect(dff.eval([0, 0])).toEqual([0]);
+    expect(await dff.eval([1, 0])).toEqual([0]);
+    expect(await dff.eval([0, 1])).toEqual([1]);
+    expect(await dff.eval([1, 1])).toEqual([1]);
+    expect(await dff.eval([1, 1])).toEqual([1]);
+    expect(await dff.eval([1, 0])).toEqual([0]);
+    expect(await dff.eval([0, 0])).toEqual([0]);
+    expect(await dff.eval([1, 0])).toEqual([0]);
+    expect(await dff.eval([0, 0])).toEqual([0]);
+    expect(await dff.eval([0, 1])).toEqual([1]);
+    expect(await dff.eval([0, 0])).toEqual([0]);
   });
 });

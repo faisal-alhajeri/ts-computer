@@ -2,16 +2,30 @@ import { RAM } from ".";
 import { Bit } from "../../gate";
 
 describe("ram", () => {
-  test("tam stores value", () => {
+  test("tam stores value", async () => {
     const ram = new RAM(4, 2);
 
-    expect(ram.eval([[1, 0, 0, 1], 1, [0, 1], 0])).toEqual([[0, 0, 0, 0]]);
-    expect(ram.eval([[1, 0, 0, 1], 0, [0, 1], 1])).toEqual([[1, 0, 0, 1]]);
-    expect(ram.eval([[0, 1, 1, 0], 0, [1, 0], 0])).toEqual([[0, 0, 0, 0]]);
-    expect(ram.eval([[0, 1, 1, 0], 1, [1, 0], 1])).toEqual([[0, 0, 0, 0]]);
-    expect(ram.eval([[0, 1, 1, 1], 0, [1, 0], 0])).toEqual([[0, 1, 1, 0]]);
-    expect(ram.eval([[0, 1, 1, 1], 1, [1, 1], 1])).toEqual([[0, 0, 0, 0]]);
-    expect(ram.eval([[0, 1, 0, 0], 0, [1, 1], 0])).toEqual([[0, 1, 1, 1]]);
+    expect(await ram.eval([[1, 0, 0, 1], 1, [0, 1], 0])).toEqual([
+      [0, 0, 0, 0],
+    ]);
+    expect(await ram.eval([[1, 0, 0, 1], 0, [0, 1], 1])).toEqual([
+      [1, 0, 0, 1],
+    ]);
+    expect(await ram.eval([[0, 1, 1, 0], 0, [1, 0], 0])).toEqual([
+      [0, 0, 0, 0],
+    ]);
+    expect(await ram.eval([[0, 1, 1, 0], 1, [1, 0], 1])).toEqual([
+      [0, 0, 0, 0],
+    ]);
+    expect(await ram.eval([[0, 1, 1, 1], 0, [1, 0], 0])).toEqual([
+      [0, 1, 1, 0],
+    ]);
+    expect(await ram.eval([[0, 1, 1, 1], 1, [1, 1], 1])).toEqual([
+      [0, 0, 0, 0],
+    ]);
+    expect(await ram.eval([[0, 1, 0, 0], 0, [1, 1], 0])).toEqual([
+      [0, 1, 1, 1],
+    ]);
 
     //     const inputs: Bit[] = [
     //       1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1,

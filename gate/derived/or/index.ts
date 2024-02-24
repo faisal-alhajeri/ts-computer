@@ -7,12 +7,17 @@ type Inputs = [Bit, Bit];
 type Outputs = [Bit];
 
 export class OrGate extends Gate<Inputs, Outputs> {
-  override eval(inputs: Inputs): Outputs {
+  private nandGate = new NandGate();
+  private notGate1 = new NotGate();
+  private notGate2 = new NotGate();
+  override async eval(inputs: Inputs): Promise<Outputs> {
     const [x, y] = inputs;
-    const nandGate = new NandGate();
-    const notGate1 = new NotGate();
-    const notGate2 = new NotGate();
 
-    return nandGate.eval([...notGate1.eval([x]), ...notGate2.eval([y])]);
+    const [notX, notY] = await Promise.all([
+      this.notGate1.eval([x]).then((res) => res[0]),
+      this.notGate2.eval([y]).then((res) => res[0]),
+    ]);
+
+    return await this.nandGate.eval([notX, notY]);
   }
 }

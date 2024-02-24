@@ -9,7 +9,7 @@ export class MultiWayDeMultiplexerGate extends Gate<Inputs, Outputs> {
     super();
   }
 
-  override eval([input, select]: Inputs): Outputs {
+  override async eval([input, select]: Inputs): Promise<Outputs> {
     // TODO: add length check
     const result: Outputs = new Array(Math.pow(2, this.m))
       .fill(0)

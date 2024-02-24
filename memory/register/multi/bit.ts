@@ -21,7 +21,7 @@ export class MultiBitRegister extends Gate<
 
   //   private lastResultMultiplexer: MultiplexerGate = new MultiplexerGate();
 
-  eval(inputs: MultiBitRegisterInputs): MultiBitRegisterOutputs {
+  async eval(inputs: MultiBitRegisterInputs): Promise<MultiBitRegisterOutputs> {
     const [inBits, load, clock] = inputs;
 
     if (inBits.length !== this.bits) {
@@ -30,12 +30,12 @@ export class MultiBitRegister extends Gate<
       );
     }
 
-    const result: BitArray = [];
-    for (let i = 0; i < this.bits; i++) {
-      const register = this.registers[i];
-      const bit = inBits[i];
-      result[i] = register.eval([bit, load, clock])[0];
-    }
+    const result: BitArray = await Promise.all(
+      this.registers.map(
+        async (gate, idx) =>
+          await gate.eval([inBits[idx], load, clock]).then(([bit]) => bit)
+      )
+    );
 
     return [result];
   }

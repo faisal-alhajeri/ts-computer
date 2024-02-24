@@ -14,7 +14,7 @@ export class MultiWayOrGate extends Gate<Inputs, Outputs> {
       .map(() => new MultiBitOrGate(bitLength));
   }
 
-  override eval(inputs: Inputs): Outputs {
+  override async eval(inputs: Inputs): Promise<Outputs> {
     if (inputs.length !== this.ways)
       throw new Error(
         `multi bit gate length error, expected (${this.ways}) but got (${inputs[0].length})`
@@ -24,7 +24,9 @@ export class MultiWayOrGate extends Gate<Inputs, Outputs> {
 
     for (let i = 1; i < this.ways; i++) {
       const orGate = this.gates[i];
-      intermidiate_result = orGate.eval([intermidiate_result, inputs[i]])[0];
+      intermidiate_result = await orGate
+        .eval([intermidiate_result, inputs[i]])
+        .then(([bit]) => bit);
     }
 
     return [intermidiate_result];

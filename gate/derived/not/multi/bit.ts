@@ -12,13 +12,17 @@ export class MultiBitNotGate extends Gate<Inputs, Outputs> {
     this.gates = new Array(length).fill(0).map(() => new NotGate());
   }
 
-  override eval(inputs: Inputs): Outputs {
+  override async eval(inputs: Inputs): Promise<Outputs> {
     if (inputs[0].length !== this.length)
       throw new Error(
         `multi bit gate length error, expected (${this.length}) but got (${inputs[0].length})`
       );
 
-    const res = this.gates.map((gate, idx) => gate.eval([inputs[0][idx]])[0]);
+    const res = await Promise.all(
+      this.gates.map(
+        async (gate, idx) => (await gate.eval([inputs[0][idx]]))[0]
+      )
+    );
 
     return [res];
   }

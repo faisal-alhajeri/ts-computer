@@ -7,7 +7,7 @@ export class AdditionGate extends Gate<Inputs, Outputs> {
     super();
   }
 
-  eval(inputs: Inputs): Outputs {
+  async eval(inputs: Inputs): Promise<Outputs> {
     const [x, y] = inputs;
 
     if (x.length !== this.length)

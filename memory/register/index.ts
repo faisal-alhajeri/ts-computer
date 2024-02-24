@@ -11,14 +11,15 @@ export class Register extends Gate<RegisterInputs, RegisterOutputs> {
   private loadMultiplexer: MultiplexerGate = new MultiplexerGate();
   //   private lastResultMultiplexer: MultiplexerGate = new MultiplexerGate();
 
-  eval(inputs: RegisterInputs): RegisterOutputs {
+  async eval(inputs: RegisterInputs): Promise<RegisterOutputs> {
     const [inBit, load, clock] = inputs;
-    const toFeedDFF: Bit = this.loadMultiplexer.eval([
-      [this.dff.stored, inBit],
-      load,
-    ])[0];
+    const toFeedDFF: Bit = await this.loadMultiplexer
+      .eval([[this.dff.stored, inBit], load])
+      .then(([bit]) => bit);
 
-    const result: Bit = this.dff.eval([toFeedDFF, clock])[0];
+    const result: Bit = await this.dff
+      .eval([toFeedDFF, clock])
+      .then(([bit]) => bit);
 
     return [result];
   }

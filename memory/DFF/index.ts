@@ -15,7 +15,7 @@ export class DFF extends Gate<DFFInputs, DFFOutputs> {
   // for example if clock is 1,1,1 then the will not save new value
   private prev_stored: Bit | undefined = undefined;
 
-  eval(inputs: DFFInputs): DFFOutputs {
+  async eval(inputs: DFFInputs): Promise<DFFOutputs> {
     const [inBit, clock] = inputs;
 
     // // if(clo)
