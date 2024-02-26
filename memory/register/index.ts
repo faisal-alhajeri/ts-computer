@@ -9,7 +9,10 @@ export type RegisterOutputs = [Bit];
 export class Register extends Gate<RegisterInputs, RegisterOutputs> {
   private dff: DFF = new DFF();
   private loadMultiplexer: MultiplexerGate = new MultiplexerGate();
-  //   private lastResultMultiplexer: MultiplexerGate = new MultiplexerGate();
+
+  public get stored() {
+    return this.dff.stored;
+  }
 
   async eval(inputs: RegisterInputs): Promise<RegisterOutputs> {
     const [inBit, load, clock] = inputs;

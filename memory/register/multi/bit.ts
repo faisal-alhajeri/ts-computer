@@ -14,6 +14,10 @@ export class MultiBitRegister extends Gate<
 > {
   private registers: Register[];
 
+  public get stored(): BitArray {
+    return this.registers.map((r) => r.stored);
+  }
+
   constructor(private bits: number) {
     super();
     this.registers = new Array(bits).fill(0).map(() => new Register());

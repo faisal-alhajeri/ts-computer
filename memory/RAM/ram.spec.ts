@@ -2,7 +2,7 @@ import { RAM } from ".";
 import { Bit } from "../../gate";
 
 describe("ram", () => {
-  test("tam stores value", async () => {
+  test("ram stores value", async () => {
     const ram = new RAM(4, 2);
 
     expect(await ram.eval([[1, 0, 0, 1], 1, [0, 1], 0])).toEqual([
