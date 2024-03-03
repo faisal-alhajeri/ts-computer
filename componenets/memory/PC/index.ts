@@ -1,4 +1,4 @@
-import { AdditionGate } from "../../componenets/Addition";
+import { AdditionGate } from "../../custom/Addition";
 import { Bit, BitArray, Gate } from "../../gate";
 import { DeMultiplexerGate } from "../../gate/derived/demultiplexer";
 import { MultiBitDeMultiplexerGate } from "../../gate/derived/demultiplexer/multi/bit";
