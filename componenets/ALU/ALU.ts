@@ -10,6 +10,7 @@ import { OrGate } from "../gate/derived/or";
 import { MultiWayOrGate } from "../gate/derived/or/multi/ways";
 export type ALUControl = [Bit, Bit, Bit, Bit, Bit, Bit];
 export type ALUInputs = [[BitArray, BitArray], ALUControl];
+// outputs are result, zr, ng
 export type ALUOutputs = [[BitArray], [Bit, Bit]];
 
 export class ALU extends Gate<ALUInputs, ALUOutputs> {

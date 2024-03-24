@@ -21,6 +21,10 @@ export class PC extends Gate<PCInputs, PCOutputs> {
   private additionGate: AdditionGate;
   private registerLoadOr: MultiWayOrGate;
 
+  get stored() {
+    return this.register.stored;
+  }
+
   constructor(private bitLength: number) {
     super();
     this.register = new MultiBitRegister(bitLength);
