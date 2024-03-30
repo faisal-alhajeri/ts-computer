@@ -6,10 +6,7 @@ import { MultiBitMultiplexerGate } from "../../componenets/gate/derived/multiple
 import { MultiWayMultiplexerGate } from "../../componenets/gate/derived/multiplexer/multi/ways";
 import { NotGate } from "../../componenets/gate/derived/not";
 import { OrGate } from "../../componenets/gate/derived/or";
-import { MultiWayOrGate } from "../../componenets/gate/derived/or/multi/ways";
 import { PC } from "../../componenets/memory/PC";
-import { RAM } from "../../componenets/memory/RAM";
-import { Register } from "../../componenets/memory/register";
 import { MultiBitRegister } from "../../componenets/memory/register/multi/bit";
 
 // inputs are inM, instruction, reset, clock

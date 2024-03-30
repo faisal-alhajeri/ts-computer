@@ -54,15 +54,15 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
 
     const resultOfRegisterIn: BitArray[] = await Promise.all(
       this.registers.map(
-        async (gate, idx) =>
-          await gate
+        async (register, idx) =>
+          await register
             .eval([inBits, loadAfterDemultiplexer[idx][0], clock])
             .then(([bits]) => bits)
       )
     );
 
     const afreMulti: BitArray = await this.outPutMultiplexer
-      .eval([resultOfRegisterIn, address])
+      .eval([this.registers.map((r) => r.stored), address])
       .then(([bits]) => bits);
 
     return [afreMulti];
