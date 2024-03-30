@@ -44,8 +44,6 @@ class Util {
     cpu: CPU;
     experement: CPUTest;
   }) {
-    console.log({ inputs: { instruction, inM, reset } });
-
     const [outM, writeM, addresM, pc] = await cpu.eval([
       inM,
       instruction,
@@ -55,13 +53,14 @@ class Util {
 
     this.clock = (this.clock ^ 1) as Bit;
 
-    if (expected.outM) expect(outM).toEqual(expected.outM);
+    if (expected.outM !== undefined) expect(outM).toEqual(expected.outM);
 
-    if (expected.writeM) expect(writeM).toEqual(expected.writeM);
+    if (expected.writeM !== undefined) expect(writeM).toEqual(expected.writeM);
 
-    if (expected.addresM) expect(addresM).toEqual(expected.addresM);
+    if (expected.addresM !== undefined)
+      expect(addresM).toEqual(expected.addresM);
 
-    if (expected.pc) expect(pc).toEqual(expected.pc);
+    if (expected.pc !== undefined) expect(pc).toEqual(expected.pc);
   }
 }
 
@@ -94,6 +93,97 @@ describe("CPU", () => {
           writeM: 0,
           addresM: Util.formStrToBitArray("0000000100010001"),
           pc: Util.formStrToBitArray("0000000000000011"),
+        },
+      },
+    ];
+
+    for (const experement of experements) {
+      await Util.test({ cpu, experement });
+    }
+  });
+
+  test("(c) operations with results", async () => {
+    const cpu = new CPU();
+
+    const experements: CPUTest[] = [
+      // (a) instruction
+      {
+        inputs: { instruction: Util.formStrToBitArray("0000000000001000") },
+        expected: {
+          writeM: 0,
+          addresM: Util.formStrToBitArray("0000000000001000"),
+          pc: Util.formStrToBitArray("0000000000000001"),
+        },
+      },
+      // DM = A
+      {
+        inputs: { instruction: Util.formStrToBitArray("1110110000011000") },
+
+        expected: {
+          writeM: 1,
+          outM: Util.formStrToBitArray("0000000000001000"),
+          addresM: Util.formStrToBitArray("0000000000001000"),
+          pc: Util.formStrToBitArray("0000000000000010"),
+        },
+      },
+      // D = D + 1
+      {
+        inputs: { instruction: Util.formStrToBitArray("1110011111010000") },
+
+        expected: {
+          writeM: 0,
+          addresM: Util.formStrToBitArray("0000000000001000"),
+          pc: Util.formStrToBitArray("0000000000000011"),
+        },
+      },
+      // A = D + 1
+      {
+        inputs: { instruction: Util.formStrToBitArray("1110011111100000") },
+
+        expected: {
+          writeM: 0,
+          addresM: Util.formStrToBitArray("0000000000001010"),
+          pc: Util.formStrToBitArray("0000000000000100"),
+        },
+      },
+
+      // ADM = D|A
+      // D here is 0000000000001001
+      {
+        inputs: {
+          instruction: Util.formStrToBitArray("1110010101111000"),
+        },
+        expected: {
+          writeM: 1,
+          outM: Util.formStrToBitArray("0000000000001011"),
+          addresM: Util.formStrToBitArray("0000000000001011"),
+          pc: Util.formStrToBitArray("0000000000000101"),
+        },
+      },
+      // M = D
+      // D here is 0000000000001011
+      {
+        inputs: {
+          instruction: Util.formStrToBitArray("1110001100001000"),
+          inM: Util.random16Bits(), // just to make sure that it has no effect
+        },
+        expected: {
+          writeM: 1,
+          outM: Util.formStrToBitArray("0000000000001011"),
+          addresM: Util.formStrToBitArray("0000000000001011"),
+          pc: Util.formStrToBitArray("0000000000000110"),
+        },
+      },
+      // A = M
+      {
+        inputs: {
+          instruction: Util.formStrToBitArray("1111110000100000"),
+          inM: Util.formStrToBitArray("1010101010101010"),
+        },
+        expected: {
+          writeM: 0,
+          addresM: Util.formStrToBitArray("1010101010101010"),
+          pc: Util.formStrToBitArray("0000000000000111"),
         },
       },
     ];
