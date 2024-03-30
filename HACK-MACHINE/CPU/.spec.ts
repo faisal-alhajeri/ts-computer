@@ -192,4 +192,7 @@ describe("CPU", () => {
       await Util.test({ cpu, experement });
     }
   });
+
+  // TODO: complete this test
+  test("(c) operations jumps", async () => {});
 });
