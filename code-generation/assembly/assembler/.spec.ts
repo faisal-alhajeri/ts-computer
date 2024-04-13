@@ -1,0 +1,25 @@
+import { HackAssembler } from ".";
+describe("assembler", () => {
+  test("simple program", () => {
+    const asm = new HackAssembler();
+    const code = `
+@R0
+D = M
+@R1
+D = D+M
+@17
+D = D+A
+@R2
+M = D
+(END)
+@END
+0; JMP
+
+`;
+    asm.addCode(code);
+
+    const res = asm.generate();
+
+    console.log({ res });
+  });
+});

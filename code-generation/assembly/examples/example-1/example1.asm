@@ -6,11 +6,11 @@ D = M
 
 // get the value of R1 and add it to D (R0) value
 @R1
-D = M + D
+D = D+M
 
 // add 17 to D (R0 value + R1 value)
 @17
-D = D + A
+D = D+A
 
 // store the value in R2
 @R2
