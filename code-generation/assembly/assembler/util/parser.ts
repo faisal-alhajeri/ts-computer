@@ -11,8 +11,7 @@ export class Parser {
 
   advance() {
     // skip before
-    while (this.isWhiteSpaceOrNLine(this.code[this.current_index]))
-      this.current_index++;
+    this.skip();
 
     // TODO: should handle the case when no instruction is provided
 
@@ -38,8 +37,7 @@ export class Parser {
     }
 
     // skip after
-    while (this.isWhiteSpaceOrNLine(this.code[this.current_index]))
-      this.current_index++;
+    this.skip();
   }
 
   instructionType(): INTRUCTION_TYPE {
@@ -161,9 +159,8 @@ export class Parser {
     // means its comment
     if (this.code.slice(this.current_index, this.current_index + 2) === "//") {
       while (!this.isNLine(this.code[this.current_index])) this.current_index++;
+      this.skip();
     }
-
-    this.skip();
   }
 }
 
