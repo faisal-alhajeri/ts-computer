@@ -153,7 +153,10 @@ export class Parser {
   }
 
   private skip() {
-    while (this.isWhiteSpaceOrNLine(this.code[this.current_index]))
+    while (
+      this.isWhiteSpaceOrNLine(this.code[this.current_index]) ||
+      this.current_index > this.code.length
+    )
       this.current_index++;
 
     // means its comment

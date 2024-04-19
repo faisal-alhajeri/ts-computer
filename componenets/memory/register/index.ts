@@ -26,4 +26,8 @@ export class Register extends Gate<RegisterInputs, RegisterOutputs> {
 
     return [result];
   }
+
+  load(bit: Bit) {
+    this.dff.load(bit);
+  }
 }

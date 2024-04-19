@@ -40,9 +40,7 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
 
   //   private lastResultMultiplexer: MultiplexerGate = new MultiplexerGate();
 
-  async eval(inputs: RAMInputs): Promise<RAMOutputs> {
-    const [inBits, load, address, clock] = inputs;
-
+  async eval([inBits, load, address, clock]: RAMInputs): Promise<RAMOutputs> {
     if (inBits.length !== this.bitLength) {
       throw new Error(
         `number of bits in register is not right, need (${this.bitLength}) and we have (${inBits.length})`
@@ -66,5 +64,17 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
       .then(([bits]) => bits);
 
     return [afreMulti];
+  }
+
+  load({ binary, offset }: { binary: BitArray[]; offset: number }) {
+    if (offset + binary.length >= this.ramSize)
+      throw new Error(
+        `cannot load into ram with binary lines (${binary.length}) and offset (${offset})`
+      );
+
+    binary.forEach((bin, idx) => {
+      const register = this.registers[offset + idx];
+      register.load(bin);
+    });
   }
 }

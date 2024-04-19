@@ -20,6 +20,14 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
   private readonly D_REGISTER = new MultiBitRegister(16);
   private readonly PC = new PC(16);
 
+  get addressM() {
+    return this.A_REGISTER.stored;
+  }
+
+  get counter() {
+    return this.PC.stored;
+  }
+
   private readonly alu_second_input_mult: MultiBitMultiplexerGate =
     new MultiBitMultiplexerGate(16);
 
@@ -123,7 +131,12 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
 
     await this.PC.eval([this.A_REGISTER.stored, [pcLoad, incr, reset], clock]);
 
-    return [alu_result, writeM, this.A_REGISTER.stored, this.PC.stored];
+    return [
+      alu_result,
+      writeM,
+      this.A_REGISTER.stored.slice(1),
+      this.PC.stored.slice(1),
+    ];
   }
 
   private getInstructionDetails(instruction: BitArray) {

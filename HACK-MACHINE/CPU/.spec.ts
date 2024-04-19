@@ -79,8 +79,8 @@ describe("CPU", () => {
         inputs: { instruction: Util.formStrToBitArray("0000000000000011") },
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000000000011"),
-          pc: Util.formStrToBitArray("0000000000000001"),
+          addresM: Util.formStrToBitArray("000000000000011"),
+          pc: Util.formStrToBitArray("000000000000001"),
         },
       },
       {
@@ -88,8 +88,8 @@ describe("CPU", () => {
 
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000100000001"),
-          pc: Util.formStrToBitArray("0000000000000010"),
+          addresM: Util.formStrToBitArray("000000100000001"),
+          pc: Util.formStrToBitArray("000000000000010"),
         },
       },
       {
@@ -97,8 +97,8 @@ describe("CPU", () => {
 
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000100010001"),
-          pc: Util.formStrToBitArray("0000000000000011"),
+          addresM: Util.formStrToBitArray("000000100010001"),
+          pc: Util.formStrToBitArray("000000000000011"),
         },
       },
     ];
@@ -117,8 +117,8 @@ describe("CPU", () => {
         inputs: { instruction: Util.formStrToBitArray("0000000000001000") },
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000000001000"),
-          pc: Util.formStrToBitArray("0000000000000001"),
+          addresM: Util.formStrToBitArray("000000000001000"),
+          pc: Util.formStrToBitArray("000000000000001"),
         },
       },
       // DM = A
@@ -128,8 +128,8 @@ describe("CPU", () => {
         expected: {
           writeM: 1,
           outM: Util.formStrToBitArray("0000000000001000"),
-          addresM: Util.formStrToBitArray("0000000000001000"),
-          pc: Util.formStrToBitArray("0000000000000010"),
+          addresM: Util.formStrToBitArray("000000000001000"),
+          pc: Util.formStrToBitArray("000000000000010"),
         },
       },
       // D = D + 1
@@ -138,8 +138,8 @@ describe("CPU", () => {
 
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000000001000"),
-          pc: Util.formStrToBitArray("0000000000000011"),
+          addresM: Util.formStrToBitArray("000000000001000"),
+          pc: Util.formStrToBitArray("000000000000011"),
         },
       },
       // A = D + 1
@@ -148,8 +148,8 @@ describe("CPU", () => {
 
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("0000000000001010"),
-          pc: Util.formStrToBitArray("0000000000000100"),
+          addresM: Util.formStrToBitArray("000000000001010"),
+          pc: Util.formStrToBitArray("000000000000100"),
         },
       },
 
@@ -162,8 +162,8 @@ describe("CPU", () => {
         expected: {
           writeM: 1,
           outM: Util.formStrToBitArray("0000000000001011"),
-          addresM: Util.formStrToBitArray("0000000000001011"),
-          pc: Util.formStrToBitArray("0000000000000101"),
+          addresM: Util.formStrToBitArray("000000000001011"),
+          pc: Util.formStrToBitArray("000000000000101"),
         },
       },
       // M = D
@@ -176,8 +176,8 @@ describe("CPU", () => {
         expected: {
           writeM: 1,
           outM: Util.formStrToBitArray("0000000000001011"),
-          addresM: Util.formStrToBitArray("0000000000001011"),
-          pc: Util.formStrToBitArray("0000000000000110"),
+          addresM: Util.formStrToBitArray("000000000001011"),
+          pc: Util.formStrToBitArray("000000000000110"),
         },
       },
       // A = M
@@ -188,8 +188,8 @@ describe("CPU", () => {
         },
         expected: {
           writeM: 0,
-          addresM: Util.formStrToBitArray("1010101010101010"),
-          pc: Util.formStrToBitArray("0000000000000111"),
+          addresM: Util.formStrToBitArray("010101010101010"),
+          pc: Util.formStrToBitArray("000000000000111"),
         },
       },
     ];
@@ -203,9 +203,9 @@ describe("CPU", () => {
   test("(c) operations jumps", async () => {
     // we will change address to 0 every time then do a test
     const cpu = new CPU();
-    const JUMP_PC = Util.formStrToBitArray("0000000000001000");
-    const NO_JUMP_PC = Util.formStrToBitArray("0000000000000010");
-    const RESET_PC = Util.formStrToBitArray("0000000000000000");
+    const JUMP_PC = Util.formStrToBitArray("000000000001000");
+    const NO_JUMP_PC = Util.formStrToBitArray("000000000000010");
+    const RESET_PC = Util.formStrToBitArray("000000000000000");
     const M = Util.formStrToBitArray("1010000000000000");
     const D = Util.formStrToBitArray("0000000000001010");
 
@@ -489,8 +489,8 @@ describe("CPU", () => {
     ];
 
     for (const experement of experements) {
-      await cpu.eval([Util.random16Bits(), RESET_PC, 1, Util.clock]);
-      await cpu.eval([Util.random16Bits(), JUMP_PC, 0, Util.clock]);
+      await cpu.eval([Util.random16Bits(), [0, ...RESET_PC], 1, Util.clock]);
+      await cpu.eval([Util.random16Bits(), [0, ...JUMP_PC], 0, Util.clock]);
       await Util.test({ cpu, experement });
     }
   });

@@ -43,4 +43,15 @@ export class MultiBitRegister extends Gate<
 
     return [result];
   }
+
+  load(bits: BitArray) {
+    if (bits.length !== this.registers.length)
+      throw new Error(
+        `unable to load register with binary length (${bits.length}) expecting (${this.registers.length})`
+      );
+
+    this.registers.forEach((reg, idx) => {
+      reg.load(bits[idx]);
+    });
+  }
 }

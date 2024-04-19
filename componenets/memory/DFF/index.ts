@@ -38,4 +38,8 @@ export class DFF extends Gate<DFFInputs, DFFOutputs> {
 
     return toReturn;
   }
+
+  load(bit: Bit) {
+    this._stored = bit;
+  }
 }

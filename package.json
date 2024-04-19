@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "assembler": "ts-node  .\\code-generation\\cli\\index.ts",
     "test": "jest"
   },
   "author": "",
