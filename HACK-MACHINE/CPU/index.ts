@@ -20,14 +20,6 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
   private readonly D_REGISTER = new MultiBitRegister(16);
   private readonly PC = new PC(16);
 
-  get addressM() {
-    return this.A_REGISTER.stored;
-  }
-
-  get counter() {
-    return this.PC.stored;
-  }
-
   private readonly alu_second_input_mult: MultiBitMultiplexerGate =
     new MultiBitMultiplexerGate(16);
 
