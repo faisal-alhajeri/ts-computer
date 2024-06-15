@@ -62,7 +62,7 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
     // save into D register if specifed in dest
     await this.D_REGISTER.eval([
       alu_result,
-      instructionDetails.c_dest_d,
+      instructionDetails.type === 1 ? instructionDetails.c_dest_d : 0, // TODO: change it later
       clock,
     ]);
 
@@ -122,6 +122,8 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
     const [incr] = await this.notPcLoadGate.eval([pcLoad]);
 
     await this.PC.eval([this.A_REGISTER.stored, [pcLoad, incr, reset], clock]);
+
+    console.log({ d: this.D_REGISTER.stored });
 
     return [
       alu_result,

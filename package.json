@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "assembler": "ts-node  .\\code-generation\\cli\\index.ts",
+    "assembler-unix": "ts-node  ./code-generation/cli/index.ts",
     "test": "jest"
   },
   "author": "",

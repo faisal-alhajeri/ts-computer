@@ -18,15 +18,22 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
 
   private ramSize: number;
   // ram slots should be power of 2
+
+  private clocks: (Bit | undefined)[];
+  private round: number = 0;
+  private last_clock: Bit | undefined;
+
   constructor(private bitLength: number, selectorBits: number) {
     super();
-    this.ramSize = Math.pow(selectorBits, 2);
+    this.ramSize = Math.pow(2, selectorBits);
     // if (Math.floor(this.selectrBits) !== this.selectrBits)
     //   throw new Error(`ram size should be power of 2, given (${ramsize})`);
 
+    this.clocks = new Array(this.ramSize).fill(0).map(() => undefined);
     this.registers = new Array(this.ramSize)
       .fill(0)
       .map(() => new MultiBitRegister(bitLength));
+
     this.outPutMultiplexer = new MultiWayMultiplexerGate(
       bitLength,
       selectorBits
@@ -46,24 +53,49 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
         `number of bits in register is not right, need (${this.bitLength}) and we have (${inBits.length})`
       );
     }
-
-    const loadAfterDemultiplexer: BitArray[] =
-      await this.loadDemultiplexer.eval([[load], address]);
-
-    const resultOfRegisterIn: BitArray[] = await Promise.all(
-      this.registers.map(
-        async (register, idx) =>
-          await register
-            .eval([inBits, loadAfterDemultiplexer[idx][0], clock])
-            .then(([bits]) => bits)
-      )
+    const addressInt = parseInt(
+      address.map((bit) => bit.toString()).join(""),
+      2
     );
+    const register = this.registers[addressInt];
 
-    const afreMulti: BitArray = await this.outPutMultiplexer
-      .eval([this.registers.map((r) => r.stored), address])
-      .then(([bits]) => bits);
+    if (this.last_clock !== undefined && this.last_clock === clock) {
+      return [register.stored];
+    }
 
-    return [afreMulti];
+    this.round++;
+    this.last_clock = clock;
+    const oldRegisterClock = this.clocks[addressInt];
+    this.clocks[addressInt] =
+      oldRegisterClock === undefined ? clock : ((oldRegisterClock ^ 1) as Bit);
+
+    await register.eval([inBits, load, this.clocks[addressInt] as Bit]);
+
+    // const loadAfterDemultiplexer: BitArray[] =
+    //   await this.loadDemultiplexer.eval([[load], address]);
+
+    // for (let i = 0; i < this.registers.length; i++) {
+    //   await this.registers[i].eval([
+    //     inBits,
+    //     loadAfterDemultiplexer[i][0],
+    //     clock,
+    //   ]);
+    // }
+    // const resultOfRegisterIn: BitArray[] = await Promise.all(
+    //   this.registers.map(
+    //     async (register, idx) =>
+    //       await register
+    //         .eval([inBits, loadAfterDemultiplexer[idx][0], clock])
+    //         .then(([bits]) => bits)
+    //   )
+    // );
+
+    // const afreMulti: BitArray = await this.outPutMultiplexer
+    //   .eval([this.registers.map((r) => r.stored), address])
+    //   .then(([bits]) => bits);
+
+    // return [afreMulti];
+    return [register.stored];
   }
 
   load({ binary, offset }: { binary: BitArray[]; offset: number }) {
@@ -76,5 +108,28 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
       const register = this.registers[offset + idx];
       register.load(bin);
     });
+  }
+
+  inspect({ offset }: { offset: number }) {
+    return this.registers[offset].stored;
+  }
+
+  private async runByBatches<T>({
+    batch,
+    args,
+    callback,
+  }: {
+    args: T[];
+    batch: number;
+    callback: (args: T[], startI: number) => Promise<void>;
+  }) {
+    let i = 0;
+    while (i < args.length) {
+      const toRun = args.slice(i, i + batch);
+
+      await callback(toRun, i);
+
+      i += batch;
+    }
   }
 }

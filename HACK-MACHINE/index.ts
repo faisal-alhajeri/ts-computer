@@ -28,7 +28,13 @@ export class HackMachine {
       this.addressM,
       clock,
     ]);
-    let [instruction] = await this.rom.eval([this.pc, 0, this.pc, clock]);
+
+    let [instruction] = await this.rom.eval([
+      new Array(16).fill(0),
+      0,
+      this.pc,
+      clock,
+    ]);
 
     [this.inM, this.loadM, this.addressM, this.pc] = await this.cpu.eval([
       this.inM,
@@ -44,11 +50,31 @@ export class HackMachine {
     }
   }
 
-  async loadRAM({ binary }: { binary: BitArray[] }) {
-    this.ram.load({ binary, offset: 0 });
+  async loadRAM({
+    binary,
+    offset = 0,
+  }: {
+    binary: BitArray[];
+    offset?: number;
+  }) {
+    this.ram.load({ binary, offset });
   }
 
-  async loadROM({ binary }: { binary: BitArray[] }) {
-    this.rom.load({ binary, offset: 0 });
+  async loadROM({
+    binary,
+    offset = 0,
+  }: {
+    binary: BitArray[];
+    offset?: number;
+  }) {
+    this.rom.load({ binary, offset });
+  }
+
+  inspectROM({ offset }: { offset: number }) {
+    return this.rom.inspect({ offset });
+  }
+
+  inspectRAM({ offset }: { offset: number }) {
+    return this.ram.inspect({ offset });
   }
 }
