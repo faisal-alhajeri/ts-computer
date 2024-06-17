@@ -29,6 +29,18 @@ export class SymbolTable {
   private prefill() {
     this.addEntry({ symbol: "R0", address: "0" });
     this.addEntry({ symbol: "R1", address: "1" });
-    this.addEntry({ symbol: "R2", address: "2" });
+    this.addEntry({ symbol: "R3", address: "3" });
+    this.addEntry({ symbol: "R4", address: "4" });
+    this.addEntry({ symbol: "R5", address: "5" });
+    this.addEntry({ symbol: "R6", address: "6" });
+    this.addEntry({ symbol: "R7", address: "7" });
+    this.addEntry({ symbol: "R8", address: "8" });
+    this.addEntry({ symbol: "R9", address: "9" });
+    this.addEntry({ symbol: "R10", address: "10" });
+    this.addEntry({ symbol: "R11", address: "11" });
+    this.addEntry({ symbol: "R12", address: "12" });
+    this.addEntry({ symbol: "R13", address: "13" });
+    this.addEntry({ symbol: "R14", address: "14" });
+    this.addEntry({ symbol: "R15", address: "15" });
   }
 }

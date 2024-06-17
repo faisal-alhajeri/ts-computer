@@ -7,6 +7,7 @@ import { MultiWayMultiplexerGate } from "../../componenets/gate/derived/multiple
 import { NotGate } from "../../componenets/gate/derived/not";
 import { OrGate } from "../../componenets/gate/derived/or";
 import { PC } from "../../componenets/memory/PC";
+import { Register } from "../../componenets/memory/register";
 import { MultiBitRegister } from "../../componenets/memory/register/multi/bit";
 
 // inputs are inM, instruction, reset, clock
@@ -123,7 +124,7 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
 
     await this.PC.eval([this.A_REGISTER.stored, [pcLoad, incr, reset], clock]);
 
-    console.log({ d: this.D_REGISTER.stored });
+    // console.log({ d: this.D_REGISTER.stored, pc: this.PC.stored });
 
     return [
       alu_result,
@@ -131,6 +132,10 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
       this.A_REGISTER.stored.slice(1),
       this.PC.stored.slice(1),
     ];
+  }
+
+  reset() {
+    this.PC.reset();
   }
 
   private getInstructionDetails(instruction: BitArray) {

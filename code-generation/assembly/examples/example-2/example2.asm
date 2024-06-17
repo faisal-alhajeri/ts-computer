@@ -14,7 +14,7 @@ M = 0
 @R0
 D = M
 @i
-D = M - D
+D = M-D
 
 // if (i - R0) > 0 then the loop should end
 @ENDLOOP
@@ -26,11 +26,11 @@ D = M
 
 // we add (i) to sum
 @sum
-M = M + D
+M = D+M
 
 // increment i
 @i
-M = M + 1
+M = M+1
 
 @LOOP
 0; JMP

@@ -33,9 +33,11 @@ export class PC extends Gate<PCInputs, PCOutputs> {
     this.registerLoadOr = new MultiWayOrGate(1, 3);
   }
 
-  async eval(inputs: PCInputs): Promise<PCOutputs> {
-    const [inBits, [load, inc, reset], clock] = inputs;
-
+  async eval([
+    inBits,
+    [load, inc, reset],
+    clock,
+  ]: PCInputs): Promise<PCOutputs> {
     const zero = Gate.zero(this.bitLength);
     const one = Gate.zero(this.bitLength);
     one[this.bitLength - 1] = 1;
@@ -57,5 +59,9 @@ export class PC extends Gate<PCInputs, PCOutputs> {
       .then(([[bit]]) => bit);
 
     return await this.register.eval([afterMulti, registerLoad, clock]);
+  }
+
+  reset() {
+    this.register.load(new Array(16).fill(0));
   }
 }

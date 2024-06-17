@@ -39,12 +39,19 @@ export class HackAssembler {
     const parser = new Parser(code);
 
     const lines: string[] = [];
+    let varNum = 16;
     while (parser.hasMoreLines()) {
       parser.advance();
 
       if (parser.instructionType() === INTRUCTION_TYPE.A_INSTRUCTION) {
         const symbol = parser.symbol();
         const isLabel = this.isLabel(symbol);
+
+        if (isLabel && !this.symbolTable.contains({ symbol })) {
+          this.symbolTable.addEntry({ address: varNum.toString(), symbol });
+          console.log({ symbol, varNum });
+          varNum++;
+        }
 
         const address = isLabel
           ? this.symbolTable.getAddress({ symbol })
@@ -76,7 +83,6 @@ export class HackAssembler {
   private isLabel(symbol: string): boolean {
     const as_num = parseInt(symbol);
 
-    if (isNaN(as_num)) return true;
-    else return false;
+    return isNaN(as_num);
   }
 }

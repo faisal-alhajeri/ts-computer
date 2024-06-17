@@ -50,12 +50,11 @@ export class Parser {
       throw new Error("current instruction should not be empty");
 
     if (instructionType === INTRUCTION_TYPE.A_INSTRUCTION) {
-      return this.current_instruction!.slice(1);
+      const trimmed = this.current_instruction.trim();
+      return trimmed!.slice(1);
     } else if (instructionType === INTRUCTION_TYPE.L_INSTRUCTION) {
-      return this.current_instruction!.slice(
-        1,
-        this.current_instruction!.length - 1
-      );
+      const trimmed = this.current_instruction.trim();
+      return trimmed!.slice(1, this.current_instruction!.length - 1);
     } else {
       throw new Error("symbol should be only in (A) and (L) instructions");
     }

@@ -12,7 +12,7 @@ M = 0
 @n
 D = M
 @R1
-D = M - D
+D = M-D
 
 @END
 D; JEQ
@@ -22,14 +22,14 @@ D; JEQ
 D = M
 // get the base address and add to it currnet (n) which saved in D
 @R0
-A = M + D
+A = D+M
 
 // set the value to -1 (as we want it to be -1)
 M = -1
 
 // increment n
 @n
-M = M + 1
+M = M+1
 
 @LOOP
 0; JMP

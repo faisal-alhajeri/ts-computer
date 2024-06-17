@@ -1,38 +1,110 @@
 import { HackMachine } from ".";
-import { BitArray } from "../componenets/gate";
+import { Bit, BitArray } from "../componenets/gate";
 
-describe("hack machine", () => {
-  test("m", async () => {
-    const machine = new HackMachine();
-
-    await machine.loadRAM({
-      binary: [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-      ],
-    });
-    const bin: any = [
-      "0000000000000000",
-      "1111110000010000",
-      "0000000000000001",
-      "1111000010010000",
-      "0000000000010001",
-      "1110000010010000",
-      "0000000000000010",
-      "1110001100001000",
-      "0000000000001000",
-      "1110101010000111",
-    ].map((b) => b.split("").map((s) => parseInt(s)));
-
-    await machine.loadROM({ binary: bin });
-    for (const _ of new Array(10)) {
+async function runBin({
+  bin,
+  machine,
+  rounds,
+  untilPC,
+}: {
+  bin: string[];
+  machine: HackMachine;
+  rounds?: number;
+  untilPC?: number;
+}) {
+  const toRun = bin.map((b) => b.split("").map((s) => parseInt(s) as Bit));
+  await machine.loadROM({ binary: toRun });
+  if (untilPC !== undefined) {
+  } else {
+    for (const _ of new Array(rounds ?? bin.length)) {
       await machine.round();
     }
+  }
+}
 
-    console.log({
-      0: machine.inspectRAM({ offset: 0 }),
-      1: machine.inspectRAM({ offset: 1 }),
-      2: machine.inspectRAM({ offset: 2 }),
+describe("hack machine", () => {
+  // test("example 1: R2 = R0 + R1 + 17", async () => {
+  //   const machine = new HackMachine();
+
+  //   const bin = [
+  //     "0000000000000000",
+  //     "1111110000010000",
+  //     "0000000000000001",
+  //     "1111000010010000",
+  //     "0000000000010001",
+  //     "1110000010010000",
+  //     "0000000000000010",
+  //     "1110001100001000",
+  //     "0000000000001000",
+  //     "1110101010000111",
+  //   ];
+
+  //   let R2: BitArray;
+
+  //   machine.reset();
+  //   await machine.loadRAM({
+  //     binary: [
+  //       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  //       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+  //     ],
+  //   });
+  //   await runBin({ bin, machine });
+  //   R2 = machine.inspectRAM({ offset: 2 });
+  //   expect(R2).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]);
+
+  //   machine.reset();
+  //   await machine.loadRAM({
+  //     binary: [
+  //       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+  //       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+  //     ],
+  //   });
+  //   await runBin({ bin, machine });
+  //   R2 = machine.inspectRAM({ offset: 2 });
+  //   expect(R2).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]);
+  // });
+
+  test("example 2: R1 = 1+ 2+ ... + M(R0)", async () => {
+    const machine = new HackMachine();
+
+    const bin = [
+      "0000000000010000",
+      "1110101010001000",
+      "0000000000010001",
+      "1110101010001000",
+      "0000000000000000",
+      "1111110000010000",
+      "0000000000010000",
+      "1111000111010000",
+      "0000000000010010",
+      "1110001100000001",
+      "0000000000010000",
+      "1111110000010000",
+      "0000000000010001",
+      "1111000010001000",
+      "0000000000010000",
+      "1111110111001000",
+      "0000000000000100",
+      "1110101010000111",
+      "0000000000010001",
+      "1111110000010000",
+      "0000000000000001",
+      "1110001100001000",
+      "0000000000010010",
+      "1110101010000111",
+    ];
+
+    let R1: BitArray;
+
+    machine.reset();
+    await machine.loadRAM({
+      binary: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]],
     });
+    await runBin({ bin, machine, rounds: 200 });
+    let R0 = machine.inspectRAM({ offset: 0 });
+    R1 = machine.inspectRAM({ offset: 1 });
+    console.log({ R0, R1 });
+
+    // expect(R1).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]);
   });
 });

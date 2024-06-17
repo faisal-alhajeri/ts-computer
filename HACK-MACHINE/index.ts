@@ -18,6 +18,11 @@ export class HackMachine {
     return this._clock;
   }
 
+  reset() {
+    this.pc = new Array(16).fill(0);
+    this.cpu.reset();
+  }
+
   async round() {
     // tik new clock
     const clock = this.clock;
