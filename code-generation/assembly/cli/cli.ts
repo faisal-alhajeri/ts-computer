@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "fs";
 import * as path from "path";
-import { HackAssembler } from "../assembly/assembler";
+import { HackAssembler } from "../assembler";
 export class CLI {
   constructor(private filePath: string) {}
 
