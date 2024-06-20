@@ -6,6 +6,7 @@
   "scripts": {
     "assembler": "ts-node  .\\code-generation\\assembly\\cli\\index.ts",
     "assembler-unix": "ts-node  ./code-generation/assembly/cli/index.ts",
+    "vm-translator-unix": "ts-node  ./code-generation/VM/cli/index.ts",
     "test": "jest"
   },
   "author": "",

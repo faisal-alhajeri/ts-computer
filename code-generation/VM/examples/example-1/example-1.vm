@@ -1,0 +1,8 @@
+push constant 10
+push this 1
+add
+push that 10
+push pointer 1
+sub
+sub
+pop temp 2
