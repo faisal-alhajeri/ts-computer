@@ -63,11 +63,23 @@ export class HackMachine {
     this.rom.load({ binary, offset });
   }
 
-  inspectROM({ offset }: { offset: number }) {
-    return this.rom.inspect({ offset });
+  inspectROM({
+    offset,
+    length = 1,
+  }: {
+    offset: number;
+    length?: number;
+  }): BitArray[] {
+    return this.rom.inspect({ offset, length });
   }
 
-  inspectRAM({ offset }: { offset: number }) {
-    return this.ram.inspect({ offset });
+  inspectRAM({
+    offset,
+    length = 1,
+  }: {
+    offset: number;
+    length?: number;
+  }): BitArray[] {
+    return this.ram.inspect({ offset, length });
   }
 }

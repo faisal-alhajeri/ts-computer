@@ -110,8 +110,8 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
     });
   }
 
-  inspect({ offset }: { offset: number }) {
-    return this.registers[offset].stored;
+  inspect({ offset, length = 1 }: { offset: number; length?: number }) {
+    return this.registers.slice(offset, offset + length).map((r) => r.stored);
   }
 
   private async runByBatches<T>({

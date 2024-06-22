@@ -55,6 +55,47 @@ export class VMTranslator {
             })
           );
           break;
+        case VM_INTRUCTION_TYPE.C_GOTO:
+          lines.push(
+            ...codeGen.writeGoto({
+              label: parser.arg1(),
+            })
+          );
+          break;
+        case VM_INTRUCTION_TYPE.C_IF:
+          lines.push(
+            ...codeGen.writeIf({
+              label: parser.arg1(),
+            })
+          );
+          break;
+        case VM_INTRUCTION_TYPE.C_LABEL:
+          lines.push(
+            ...codeGen.writeLabel({
+              label: parser.arg1(),
+            })
+          );
+          break;
+        case VM_INTRUCTION_TYPE.C_FUNCTION:
+          lines.push(
+            ...codeGen.writeFunction({
+              name: parser.arg1(),
+              nVars: parseInt(parser.arg2()),
+            })
+          );
+          break;
+        case VM_INTRUCTION_TYPE.C_CALL:
+          lines.push(
+            ...codeGen.writeCall({
+              name: parser.arg1(),
+              nVars: parseInt(parser.arg2()),
+            })
+          );
+          break;
+        case VM_INTRUCTION_TYPE.C_RETURN:
+          lines.push(...codeGen.writeReturn());
+          break;
+
         default:
           throw new Error(`unimplemented case (${parser.instructionType()})`);
       }

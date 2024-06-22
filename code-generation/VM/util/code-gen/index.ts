@@ -68,13 +68,14 @@ export class VMCodeGenerator {
 
     const retunLabel = fPath + `$ret.${this.returnCount[fPath]}`;
     return [
-      //
       `// call ${name} ${nVars}`,
+      // add the return label into stack
       `@${retunLabel}`,
       `D = A`,
       `@SP`,
       `A = M`,
       `M = D`,
+      // add the return label into stack
       `@LCL`,
       `D = M`,
       `@SP`,
@@ -101,13 +102,12 @@ export class VMCodeGenerator {
       `M = D`,
       `@SP`,
       `M = M+1`,
-      `A = M`,
       `D = M`,
       `@LCL`,
       `M = D`,
       `@ARG`,
       `M = D`,
-      `@${5 + nVars}`,
+      `@${5 + nVars}`, // TODO: change it later
       `D = A`,
       `@ARG`,
       `M = M-D`,
@@ -139,9 +139,10 @@ export class VMCodeGenerator {
       `@R13`,
       `M = D`,
 
-      // put the current sp into arg, whick will be the sp later
+      // put the current sp into arg, which will be the sp later
       `@SP`,
-      `A = M-1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@ARG`,
       `A = M`,
@@ -213,8 +214,9 @@ export class VMCodeGenerator {
   }
 
   writeIf({ label }: { label: string }): string[] {
+    const fPath = [this.filename, ...this.functionPath].join(".") + `$${label}`;
     return [
-      `// if-goto ${label}`,
+      `// if-goto ${fPath}`,
       // get stack
       `@SP`,
       `M = M-1`,
@@ -224,14 +226,16 @@ export class VMCodeGenerator {
       // // return stack pointer
       // `@SP`,
       // `M = M + 1`,
-      `@${label}`,
+      `@${fPath}`,
       `D; JNE`,
       `\n`,
     ];
   }
 
   writeGoto({ label }: { label: string }): string[] {
-    return [`// goto ${label}`, `@${label}`, `0; JMP`, `\n`];
+    const fPath = [this.filename, ...this.functionPath].join(".") + `$${label}`;
+
+    return [`// goto ${fPath}`, `@${fPath}`, `0; JMP`, `\n`];
   }
 
   writeLabel({ label }: { label: string }): string[] {
@@ -301,7 +305,7 @@ export class VMCodeGenerator {
           `@${index}`,
           `D = A`,
           `@${vmSegmentsMapping[segment]}`,
-          `A = M+D`,
+          `A = D+M`,
           `D = M`,
         ];
 
@@ -342,7 +346,7 @@ export class VMCodeGenerator {
           `@${index}`,
           `D = A`,
           `@${vmSegmentsMapping[segment]}`,
-          `D = M+D`,
+          `D = D+M`,
         ];
 
       case VM_SEGMENT.POINTER:

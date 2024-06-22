@@ -1,9 +1,18 @@
+
 push constant 10
-push constant 7
-add
+push constant 6
+call example-2.add2 2
+// push constant 7
+// push constant 7
+// push constant 7
+// push constant 7
+goto exit
 
-push constant 2
-push constant 3
-add
 
-sub
+function add2 2
+    push argument 0
+    push argument 1
+    add
+    return 
+
+label exit
