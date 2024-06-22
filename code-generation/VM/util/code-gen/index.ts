@@ -5,10 +5,24 @@ import {
   vmSegmentsMapping,
 } from "../../types";
 
+/**
+ * generates code from VM spec to hack assembly
+ */
 export class VMCodeGenerator {
   private filename: string;
+  private functionPath: string[] = [];
+  private returnCount: { [path: string]: number } = {};
+
   constructor(props: { filename: string }) {
     this.filename = props.filename;
+  }
+
+  enterFunction(f: string) {
+    this.functionPath.push(f);
+  }
+
+  quitFunction() {
+    this.functionPath.pop();
   }
 
   writePushPop({
@@ -20,25 +34,211 @@ export class VMCodeGenerator {
     segment: VM_SEGMENT;
     index: string;
   }): string[] {
-    return type === VM_INTRUCTION_TYPE.C_PUSH
-      ? this.writePush({ index, segment })
-      : this.writePop({ index, segment });
+    const t = type === VM_INTRUCTION_TYPE.C_PUSH ? "push" : "pop";
+    return [
+      `// ${t} ${segment} ${index}`,
+      ...(type === VM_INTRUCTION_TYPE.C_PUSH
+        ? this.writePush({ index, segment })
+        : this.writePop({ index, segment })),
+      `\n`,
+    ];
   }
 
   writeArethmatic({ command }: { command: VM_ARETHMATIC }): string[] {
     const numOpPops = [VM_ARETHMATIC.neg].includes(command) ? 1 : 2;
     return [
-      // get the last stack elm
+      `// ${command}`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
-      ...(numOpPops === 2 ? [`D = M`, `@SP`, `AM = M - 1`] : []),
+      ...(numOpPops === 2 ? [`D = M`, `@SP`, `M = M-1`, `A = M`] : []),
 
       ...this.arethmaticSwitch({ command }),
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
+      `\n`,
     ];
+  }
+
+  writeCall({ nVars, name }: { name: string; nVars: number }) {
+    const fPath = [this.filename, ...this.functionPath].join(".");
+    this.returnCount[fPath] = (this.returnCount[fPath] ?? 0) + 1;
+
+    const retunLabel = fPath + `$ret.${this.returnCount[fPath]}`;
+    return [
+      //
+      `// call ${name} ${nVars}`,
+      `@${retunLabel}`,
+      `D = A`,
+      `@SP`,
+      `A = M`,
+      `M = D`,
+      `@LCL`,
+      `D = M`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `M = D`,
+      `@ARG`,
+      `D = M`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `M = D`,
+      `@THIS`,
+      `D = M`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `M = D`,
+      `@THAT`,
+      `D = M`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `M = D`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `D = M`,
+      `@LCL`,
+      `M = D`,
+      `@ARG`,
+      `M = D`,
+      `@${5 + nVars}`,
+      `D = A`,
+      `@ARG`,
+      `M = M-D`,
+      `@${name}`,
+      `0; JMP`,
+      `(${retunLabel})`,
+      `\n`,
+    ];
+  }
+
+  writeReturn(): string[] {
+    const currentFPath = [this.filename, ...this.functionPath].join(".");
+    this.functionPath.pop();
+    return [
+      //
+      `// return (from function ${currentFPath})`,
+      `@LCL`,
+      `D = M`,
+      // R12 will be the current LCL (end of frame)
+      `@R12`,
+      `M = D`,
+
+      // R13 will be the return address
+      `@5`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@R13`,
+      `M = D`,
+
+      // put the current sp into arg, whick will be the sp later
+      `@SP`,
+      `A = M-1`,
+      `D = M`,
+      `@ARG`,
+      `A = M`,
+      `M = D`,
+
+      // reposition stack pointer
+      `@ARG`,
+      `D = M+1`,
+      `@SP`,
+      `M = D`,
+
+      // reposition THAT
+      `@1`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@THAT`,
+      `M = D`,
+
+      // reposition THIS
+      `@2`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@THIS`,
+      `M = D`,
+
+      // reposition ARG
+      `@3`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@ARG`,
+      `M = D`,
+
+      // reposition LCL
+      `@4`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@LCL`,
+      `M = D`,
+
+      // goto return address
+      `@5`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `A = M`,
+      `0; JMP`,
+      `\n`,
+    ];
+  }
+
+  writeFunction({ nVars, name }: { name: string; nVars: number }): string[] {
+    this.functionPath.push(name);
+    const path = [this.filename, ...this.functionPath].join(".");
+    return [
+      //
+      `// function ${name} ${nVars}`,
+      `(${path})`,
+      `\n`,
+    ];
+  }
+
+  writeIf({ label }: { label: string }): string[] {
+    return [
+      `// if-goto ${label}`,
+      // get stack
+      `@SP`,
+      `M = M-1`,
+      `A = M`,
+      // get value to D
+      `D = M`,
+      // // return stack pointer
+      // `@SP`,
+      // `M = M + 1`,
+      `@${label}`,
+      `D; JNE`,
+      `\n`,
+    ];
+  }
+
+  writeGoto({ label }: { label: string }): string[] {
+    return [`// goto ${label}`, `@${label}`, `0; JMP`, `\n`];
+  }
+
+  writeLabel({ label }: { label: string }): string[] {
+    const path = [[this.filename, ...this.functionPath].join("."), label].join(
+      "$"
+    );
+    return [`// label ${label}`, `(${path})`, `\n`];
   }
 
   private writePop({
@@ -55,13 +255,14 @@ export class VMCodeGenerator {
       ...this.getSegmentAddressIntoD({ index, segment }),
       // save address of the segent index
       // in temp var
-      `@temp`,
+      `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       // A now points to SP - 1
       `D = M`,
-      `@temp`,
+      `@R12`,
       `A = M`,
       `M = D`,
     ];
@@ -80,7 +281,7 @@ export class VMCodeGenerator {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
     ];
   }
 
@@ -100,7 +301,7 @@ export class VMCodeGenerator {
           `@${index}`,
           `D = A`,
           `@${vmSegmentsMapping[segment]}`,
-          `A = M + D`,
+          `A = M+D`,
           `D = M`,
         ];
 
@@ -141,16 +342,15 @@ export class VMCodeGenerator {
           `@${index}`,
           `D = A`,
           `@${vmSegmentsMapping[segment]}`,
-          `D = M + D`,
+          `D = M+D`,
         ];
 
       case VM_SEGMENT.POINTER:
-        const s =
-          index === "0"
-            ? "THIS"
-            : index === "1"
-            ? "THAT"
-            : new Error(`pointer index should be 0 or 1, not ${index}`);
+        const s = index === "0" ? "THIS" : index === "1" ? "THAT" : undefined;
+
+        if (s === undefined)
+          throw new Error(`pointer index should be 0 or 1, not ${index}`);
+
         return [`@${s}`, `D = A`];
       case VM_SEGMENT.TEMP:
         const indexInt = parseInt(index);
@@ -169,11 +369,73 @@ export class VMCodeGenerator {
   private arethmaticSwitch({ command }: { command: VM_ARETHMATIC }): string[] {
     switch (command) {
       case VM_ARETHMATIC.add:
-        return [`M = D + M`];
+        return [`M = D+M`];
       case VM_ARETHMATIC.sub:
-        return [`M = D - M`];
+        return [`M = M-D`];
       case VM_ARETHMATIC.neg:
-        return [`M = -D`];
+        return [`M = -M`];
+      case VM_ARETHMATIC.lt:
+        // x < y -> M < D
+        return [
+          `D = M-D`,
+          `@32767`,
+          `A = !A`,
+          `D = D&A`,
+          `@SP`,
+          `A = M`,
+          `M = D`,
+        ];
+      case VM_ARETHMATIC.gt:
+        // x > y -> M > D
+        return [
+          `D = D-M`,
+          `@32767`,
+          `A = !A`,
+          `D = D&A`,
+          `@SP`,
+          `A = M`,
+          `M = D`,
+        ];
+      case VM_ARETHMATIC.lte:
+        // x <= y -> M <= D -> M-1 < D
+        return [
+          `D = M-D`,
+          `D = D-1`,
+          `@32767`,
+          `A = !A`,
+          `D = D&A`,
+          `@SP`,
+          `A = M`,
+          `M = D`,
+        ];
+      case VM_ARETHMATIC.gte:
+        // x >= y -> M >= D -> M > D-1
+        return [
+          `D = D-M`,
+          `D = D-1`,
+          `@32767`,
+          `A = !A`,
+          `D = D&A`,
+          `@SP`,
+          `A = M`,
+          `M = D`,
+        ];
+      case VM_ARETHMATIC.eq:
+        return [
+          `M = M-D`,
+          `D = !M`,
+          `M = M-1`,
+          `D = D&M`,
+          `@32767`,
+          `A = !A`,
+          `D = D&A`,
+          `@SP`,
+          `A = M`,
+          `M = D`,
+        ];
+      case VM_ARETHMATIC.neq:
+        // do nothing, because we will return the current stack top
+        return [`M = M-D`];
       // TODO: the rest of arethmatic is not  yet implimented
       default:
         throw new Error(`unimplemented command ${command}`);

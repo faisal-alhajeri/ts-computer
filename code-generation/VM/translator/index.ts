@@ -17,7 +17,15 @@ export class VMTranslator {
     const parser = new VMParser(this.code);
     const codeGen = new VMCodeGenerator({ filename: this.filename });
 
-    const lines: string[] = [];
+    const lines: string[] = [
+      //
+      `// init vars`,
+      `@256`,
+      `D = A`,
+      `@SP`,
+      `M = D`,
+    ];
+
     while (parser.hasMoreLines()) {
       parser.advance();
 
@@ -52,6 +60,13 @@ export class VMTranslator {
       }
     }
 
+    lines.push(
+      // convition for ending the program
+      `(END)`,
+      `@END`,
+      `0; JMP`,
+      `\n`
+    );
     return lines;
   }
 }

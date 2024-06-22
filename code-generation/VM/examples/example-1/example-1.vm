@@ -4,5 +4,5 @@ add
 push that 10
 push pointer 1
 sub
-sub
+neg
 pop temp 2

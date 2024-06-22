@@ -55,23 +55,11 @@ export class HackMachine {
     }
   }
 
-  async loadRAM({
-    binary,
-    offset = 0,
-  }: {
-    binary: BitArray[];
-    offset?: number;
-  }) {
+  loadRAM({ binary, offset = 0 }: { binary: BitArray[]; offset?: number }) {
     this.ram.load({ binary, offset });
   }
 
-  async loadROM({
-    binary,
-    offset = 0,
-  }: {
-    binary: BitArray[];
-    offset?: number;
-  }) {
+  loadROM({ binary, offset = 0 }: { binary: BitArray[]; offset?: number }) {
     this.rom.load({ binary, offset });
   }
 
