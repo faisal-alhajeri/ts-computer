@@ -52,6 +52,8 @@ export class VMParser {
       this.current_instruction_type = VM_INTRUCTION_TYPE.C_LABEL;
     } else if (this.current_instruction.startsWith("call")) {
       this.current_instruction_type = VM_INTRUCTION_TYPE.C_CALL;
+    } else if (this.current_instruction.startsWith("goto")) {
+      this.current_instruction_type = VM_INTRUCTION_TYPE.C_GOTO;
     } else if (this.current_instruction.startsWith("if-goto")) {
       this.current_instruction_type = VM_INTRUCTION_TYPE.C_IF;
     } else if (this.current_instruction.startsWith("return")) {
