@@ -10,10 +10,6 @@ async function run() {
   // });
   await runner.run({ rounds: 100 });
   console.log({
-    // r0: runner.machine.inspectRAM({ offset: 0 }),
-    // r1: runner.machine.inspectRAM({ offset: 256 }),
-    // r2: runner.machine.inspectRAM({ offset: 257 }),
-    sp0: runner.machine.inspectRAM({ offset: 255 }),
     sp1: runner.machine.inspectRAM({ offset: 256 }),
     sp2: runner.machine.inspectRAM({ offset: 257 }),
     sp3: runner.machine.inspectRAM({ offset: 258 }),

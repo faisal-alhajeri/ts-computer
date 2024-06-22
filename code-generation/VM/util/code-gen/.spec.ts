@@ -17,13 +17,13 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@LCL`,
-      `A = M + D`,
+      `A = M+D`,
       `D = M`,
       `@SP`,
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -39,13 +39,13 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@ARG`,
-      `A = M + D`,
+      `A = M+D`,
       `D = M`,
       `@SP`,
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -61,13 +61,13 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@THIS`,
-      `A = M + D`,
+      `A = M+D`,
       `D = M`,
       `@SP`,
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -83,13 +83,13 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@THAT`,
-      `A = M + D`,
+      `A = M+D`,
       `D = M`,
       `@SP`,
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -108,7 +108,7 @@ describe("vm code-gen", () => {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -127,7 +127,7 @@ describe("vm code-gen", () => {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -160,7 +160,7 @@ describe("vm code-gen", () => {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -179,7 +179,7 @@ describe("vm code-gen", () => {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
@@ -212,7 +212,7 @@ describe("vm code-gen", () => {
       `A = M`,
       `M = D`,
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
   });
@@ -230,11 +230,12 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@LCL`,
-      `D = M + D`,
+      `D = M+D`,
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@R12`,
       `A = M`,
@@ -254,11 +255,12 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@ARG`,
-      `D = M + D`,
+      `D = M+D`,
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@R12`,
       `A = M`,
@@ -278,11 +280,12 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@THIS`,
-      `D = M + D`,
+      `D = M+D`,
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@R12`,
       `A = M`,
@@ -302,11 +305,12 @@ describe("vm code-gen", () => {
       `@11`,
       `D = A`,
       `@THAT`,
-      `D = M + D`,
+      `D = M+D`,
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@R12`,
       `A = M`,
@@ -328,7 +332,8 @@ describe("vm code-gen", () => {
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       // A now points to SP - 1
       `D = M`,
       `@R12`,
@@ -351,7 +356,8 @@ describe("vm code-gen", () => {
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       // A now points to SP - 1
       `D = M`,
       `@R12`,
@@ -402,7 +408,8 @@ describe("vm code-gen", () => {
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       // A now points to SP - 1
       `D = M`,
       `@R12`,
@@ -439,7 +446,8 @@ describe("vm code-gen", () => {
       `@R12`,
       `M = D`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       // A now points to SP - 1
       `D = M`,
       `@R12`,
@@ -453,58 +461,65 @@ describe("vm code-gen", () => {
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.add })).toEqual([
       `// add`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `M = D + M`,
+      `M = D+M`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.sub })).toEqual([
       `// sub`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `M = M - D`,
+      `M = M-D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.neg })).toEqual([
       `// neg`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
       `M = -M`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.lt })).toEqual([
       `// lt`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `D = M - D`,
+      `D = M-D`,
       `@32767`,
       `A = !A`,
       `D = D&A`,
@@ -513,20 +528,22 @@ describe("vm code-gen", () => {
       `M = D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.gt })).toEqual([
       `// gt`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `D = D - M`,
+      `D = D-M`,
       `@32767`,
       `A = !A`,
       `D = D&A`,
@@ -535,21 +552,23 @@ describe("vm code-gen", () => {
       `M = D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.lte })).toEqual([
       `// lte`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `D = M - D`,
-      `D = D - 1`,
+      `D = M-D`,
+      `D = D-1`,
       `@32767`,
       `A = !A`,
       `D = D&A`,
@@ -558,21 +577,23 @@ describe("vm code-gen", () => {
       `M = D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.gte })).toEqual([
       `// gte`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `D = D - M`,
-      `D = D - 1`,
+      `D = D-M`,
+      `D = D-1`,
       `@32767`,
       `A = !A`,
       `D = D&A`,
@@ -581,22 +602,24 @@ describe("vm code-gen", () => {
       `M = D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.eq })).toEqual([
       `// eq`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `M = M - D`,
+      `M = M-D`,
       `D = !M`,
-      `M = M - 1`,
+      `M = M-1`,
       `D = D&M`,
       `@32767`,
       `A = !A`,
@@ -606,23 +629,25 @@ describe("vm code-gen", () => {
       `M = D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
 
     expect(gen.writeArethmatic({ command: VM_ARETHMATIC.neq })).toEqual([
       `// neq`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
       `D = M`,
       `@SP`,
-      `AM = M - 1`,
+      `M = M-1`,
+      `A = M`,
 
       // arathmatic
-      `M = M - D`,
+      `M = M-D`,
 
       `@SP`,
-      `M = M + 1`,
+      `M = M+1`,
       `\n`,
     ]);
   });
