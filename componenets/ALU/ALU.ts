@@ -128,72 +128,58 @@ export class ALU extends Gate<ALUInputs, ALUOutputs> {
     return [[afterN], [zr, ng]];
   }
 
-  // eval(inputs: ALUInputs): ALUOutputs {
-  //   const [[x, y], [zx, nx, zy, ny, f, n]] = inputs;
+  evalSync(inputs: ALUInputs): ALUOutputs {
+    const [[x, y], [zx, nx, zy, ny, f, n]] = inputs;
 
-  //   if (x.length !== this.length)
-  //     throw new Error(
-  //       `x have incorrect length, is (${x.length}) but should be (${this.length})`
-  //     );
+    if (x.length !== this.bitLength)
+      throw new Error(
+        `x have incorrect length, is (${x.length}) but should be (${this.bitLength})`
+      );
 
-  //   if (y.length !== this.length)
-  //     throw new Error(
-  //       `y have incorrect length, is (${y.length}) but should be (${this.length})`
-  //     );
+    if (y.length !== this.bitLength)
+      throw new Error(
+        `y have incorrect length, is (${y.length}) but should be (${this.bitLength})`
+      );
 
-  //   let out: BitArray;
-  //   let zr: Bit;
-  //   let ng: Bit;
+    // calculate if zx or pass x as it is
+    const afterZx = this.zxGate.evalSync([x, [zx]])[0];
 
-  //   let tX = x;
-  //   let tY = y;
+    // calculate the nigation if x so if flag (nx) then we will pass its value
+    const negateZX = this.negateZxGate.evalSync([afterZx])[0];
 
-  //   if (zx === 1) {
-  //     tX = tX.map(() => 0);
-  //   }
+    // choose between the values (negateZx) and (afterZx) from flag (nx)
+    const afterNx = this.nxGate.evalSync([[afterZx, negateZX], [nx]])[0];
 
-  //   if (nx === 1) {
-  //     const notGate = new NotGate();
-  //     tX = tX.map((b) => notGate.eval([b])[0]);
-  //   }
+    // calculate if zy or pass y as it is
+    const afterZy = this.zyGate.evalSync([y, [zy]])[0];
 
-  //   if (zy === 1) {
-  //     tY = tY.map(() => 0);
-  //   }
+    // calculate the nigation if y so if flag (ny) then we will pass its value
+    const negateZy = this.negateZyGate.evalSync([afterZy])[0];
 
-  //   if (ny === 1) {
-  //     const notGate = new NotGate();
-  //     tY = tY.map((b) => notGate.eval([b])[0]);
-  //   }
+    // choose between the values (negateZy) and (afterZy) from flag (ny)
+    const afterNy = this.nyGate.evalSync([[afterZy, negateZy], [ny]])[0];
 
-  //   if (f === 1) {
-  //     const addidtionGate = new AdditionGate(this.length);
-  //     out = addidtionGate.eval([tX, tY])[0];
-  //   } else {
-  //     const andGate = new MultiBitAnd(this.length);
-  //     out = andGate.eval([tX, tY])[0];
-  //   }
+    const additionXY = this.additionXYGate.evalSync([afterNx, afterNy])[0];
 
-  //   if (n === 1) {
-  //     const notGate = new MultiBitNotGate(this.length);
-  //     out = notGate.eval([out])[0];
-  //   }
+    const andXY = this.andXYGate.evalSync([afterNx, afterNy])[0];
 
-  //   if (out[0] === 1) {
-  //     ng = 1;
-  //   } else {
-  //     ng = 0;
-  //   }
+    const afterF = this.fGate.evalSync([[andXY, additionXY], [f]])[0];
 
-  //   const orGate = new OrGate();
-  //   const isZero =
-  //     out.reduce((acc, bit) => orGate.eval([acc, bit])[0], 0) === 0;
-  //   if (isZero) {
-  //     zr = 1;
-  //   } else {
-  //     zr = 0;
-  //   }
+    const negateAfterF = this.negateFGate.evalSync([afterF])[0];
 
-  //   return [[out], [zr, ng]];
-  // }
+    const afterN = this.nGate.evalSync([[afterF, negateAfterF], [n]])[0];
+
+    // just for convintion will name it (out)
+    const out = afterN;
+
+    const temp: [Bit] = this.isNotZeroOrGate.evalSync(
+      out.map((bit) => [bit])
+    )[0] as [Bit];
+
+    const zr = this.negateIsNotZero.evalSync(temp)[0];
+
+    const ng = out[0];
+
+    return [[afterN], [zr, ng]];
+  }
 }
