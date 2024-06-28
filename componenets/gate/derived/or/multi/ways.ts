@@ -31,4 +31,23 @@ export class MultiWayOrGate extends Gate<Inputs, Outputs> {
 
     return [intermidiate_result];
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    if (inputs.length !== this.ways)
+      throw new Error(
+        `multi bit gate length error, expected (${this.ways}) but got (${inputs[0].length})`
+      );
+
+    let intermidiate_result = inputs[0];
+
+    for (let i = 1; i < this.ways; i++) {
+      const orGate = this.gates[i];
+      intermidiate_result = orGate.evalSync([
+        intermidiate_result,
+        inputs[i],
+      ])[0];
+    }
+
+    return [intermidiate_result];
+  }
 }

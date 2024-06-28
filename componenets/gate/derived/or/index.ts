@@ -20,4 +20,13 @@ export class OrGate extends Gate<Inputs, Outputs> {
 
     return await this.nandGate.eval([notX, notY]);
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    const [x, y] = inputs;
+
+    const notX = this.notGate1.evalSync([x])[0];
+    const notY = this.notGate2.evalSync([y])[0];
+
+    return this.nandGate.evalSync([notX, notY]);
+  }
 }
