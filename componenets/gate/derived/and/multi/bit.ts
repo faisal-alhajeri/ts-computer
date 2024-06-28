@@ -28,4 +28,17 @@ export class MultiBitAndGate extends Gate<Inputs, Outputs> {
 
     return [res];
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    if (inputs[0].length !== this.length || inputs[1].length !== this.length)
+      throw new Error(
+        `multi bit gate length error, expected (${this.length}, ${this.length}) but got (${inputs[0].length}, ${inputs[1].length})`
+      );
+
+    const res = this.gates.map(
+      (gate, idx) => gate.evalSync([inputs[0][idx], inputs[1][idx]])[0]
+    );
+
+    return [res];
+  }
 }

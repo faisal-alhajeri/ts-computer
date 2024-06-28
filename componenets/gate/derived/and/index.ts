@@ -12,4 +12,8 @@ export class AndGate extends Gate<Inputs, Outputs> {
   override async eval(inputs: Inputs): Promise<Outputs> {
     return await this.notGate.eval(await this.nandGate.eval(inputs));
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    return this.notGate.evalSync(this.nandGate.evalSync(inputs));
+  }
 }
