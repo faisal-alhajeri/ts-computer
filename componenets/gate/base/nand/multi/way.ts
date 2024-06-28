@@ -14,7 +14,7 @@ export class MultiWayNandGate extends Gate<
 > {
   private andGates: MultiBitAndGate[];
   private notGate: MultiBitNotGate;
-  constructor(private bitLength: number, private ways: number) {
+  constructor(bitLength: number, private ways: number) {
     super();
 
     this.notGate = new MultiBitNotGate(bitLength);
@@ -39,5 +39,21 @@ export class MultiWayNandGate extends Gate<
     }
 
     return await this.notGate.eval([intermidate_result]);
+  }
+
+  evalSync(inputs: MultiWayNandInputs): MultiWayNandOutputs {
+    if (inputs.length !== this.ways) {
+      throw new Error(
+        `number of inputs doesnt match number of ways, ways=${this.ways} inputs=${inputs.length}`
+      );
+    }
+
+    let intermidate_result: BitArray = inputs[0];
+    for (let i = 1; i < inputs.length; i++) {
+      const andGate = this.andGates[i];
+      intermidate_result = andGate.evalSync([intermidate_result, inputs[i]])[0];
+    }
+
+    return this.notGate.evalSync([intermidate_result]);
   }
 }

@@ -14,6 +14,19 @@ export class MultiBitNandGate extends Gate<
     this.gates = new Array(length).fill(0).map(() => new NandGate());
   }
 
+  evalSync(inputs: MultiBitNandInputs): MultiBitNandOutputs {
+    if (inputs[0].length !== this.length || inputs[1].length !== this.length)
+      throw new Error(
+        `multi bit gate length error, expected (${this.length}, ${this.length}) but got (${inputs[0].length}, ${inputs[1].length})`
+      );
+
+    return [
+      this.gates.map(
+        (gate, idx) => gate.evalSync([inputs[0][idx], inputs[1][idx]])[0]
+      ),
+    ];
+  }
+
   async eval(inputs: MultiBitNandInputs): Promise<MultiBitNandOutputs> {
     if (inputs[0].length !== this.length || inputs[1].length !== this.length)
       throw new Error(
