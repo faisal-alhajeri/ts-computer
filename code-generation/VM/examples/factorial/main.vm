@@ -1,0 +1,5 @@
+push constant 3
+call factorial.fac 1
+
+goto end
+

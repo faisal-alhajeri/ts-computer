@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, readdirSync } from "fs";
 import * as path from "path";
 import { VMTranslator } from "../translator";
 
@@ -6,11 +6,23 @@ export class CLI {
   constructor(private filePath: string) {}
 
   run() {
-    const { fullName, name } = this.parseFile(this.filePath);
+    const { outputName, files, workingDir } = this.parseFile(this.filePath);
 
-    const code = this.openFile(this.filePath);
-    const assembly = this.generate({ code, filename: name });
-    this.save({ assembly, fileName: fullName });
+    const translator = new VMTranslator();
+    translator.init();
+    files.forEach((filename) => {
+      const code = this.openFile(
+        path.join(workingDir, `${filename.name}${filename.ext}`)
+      );
+
+      translator.code = code;
+      translator.filename = filename.name;
+
+      translator.translate();
+    });
+    translator.end();
+    const assembly = translator.lines.join("\n");
+    this.save({ assembly, fileName: outputName });
   }
 
   private openFile(name: string): string {
@@ -45,15 +57,30 @@ export class CLI {
 
   private parseFile(filePath: string) {
     const parsed = path.parse(filePath);
+    const mode = parsed.ext === "" ? "dir" : "file";
 
-    if (parsed.ext !== ".vm") {
-      throw new Error("File Extension should be .vm");
+    const workingDir =
+      mode === "file" ? parsed.dir : path.join(parsed.dir, parsed.name);
+
+    const outputFile = path.join(workingDir, `${parsed.name}.asm`);
+    console.log({ parsed });
+
+    const files =
+      mode === "file"
+        ? [parsed]
+        : readdirSync(workingDir)
+            .map((f) => path.parse(f))
+            .filter((f) => f.ext === ".vm");
+
+    if (mode === "file") {
+      if (parsed.ext !== ".vm") {
+        throw new Error("File Extension should be .vm");
+      }
+    } else {
     }
 
-    const outPutFile = path.join(parsed.dir, `${parsed.name}.asm`);
-    console.log({ outPutFile });
-
-    return { name: parsed.name, fullName: outPutFile };
+    console.log({ workingDir, outputFile, files });
+    return { workingDir, files, outputName: outputFile };
   }
 
   private save({ assembly, fileName }: { assembly: string; fileName: string }) {

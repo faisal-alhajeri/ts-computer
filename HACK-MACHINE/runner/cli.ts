@@ -27,6 +27,8 @@ export class HackCliRunner {
 
     let i = 0;
     while (this.binToInt(this.machine.pc) < binLenght - 1) {
+      console.log({ pc: this.binToInt(this.machine.pc) });
+
       this.machine.roundSync();
       i++;
     }

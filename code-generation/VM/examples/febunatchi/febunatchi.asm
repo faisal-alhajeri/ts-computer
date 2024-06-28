@@ -14,7 +14,7 @@ M = M+1
 
 
 // call feb 1
-@febunatchi$ret.1
+@code-generation/VM/examples/febunatchi/febunatchi.vm$ret.1
 D = A
 @SP
 A = M
@@ -54,18 +54,18 @@ M = D
 D = A
 @ARG
 M = M-D
-@febunatchi.feb
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb
 0; JMP
-(febunatchi$ret.1)
+(code-generation/VM/examples/febunatchi/febunatchi.vm$ret.1)
 
 
-// goto febunatchi$end
-@febunatchi$end
+// goto code-generation/VM/examples/febunatchi/febunatchi.vm$end
+@code-generation/VM/examples/febunatchi/febunatchi.vm$end
 0; JMP
 
 
 // function feb 1
-(febunatchi.feb)
+(code-generation/VM/examples/febunatchi/febunatchi.vm.feb)
 
 
 // push argument 0
@@ -111,12 +111,12 @@ M = D
 M = M+1
 
 
-// if-goto febunatchi.feb$base
+// if-goto code-generation/VM/examples/febunatchi/febunatchi.vm.feb$base
 @SP
 M = M-1
 A = M
 D = M
-@febunatchi.feb$base
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb$base
 D; JNE
 
 
@@ -157,7 +157,7 @@ M = M+1
 
 
 // call feb 1
-@febunatchi.feb$ret.1
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb$ret.1
 D = A
 @SP
 A = M
@@ -197,9 +197,9 @@ M = D
 D = A
 @ARG
 M = M-D
-@febunatchi.feb
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb
 0; JMP
-(febunatchi.feb$ret.1)
+(code-generation/VM/examples/febunatchi/febunatchi.vm.feb$ret.1)
 
 
 // push argument 0
@@ -239,7 +239,7 @@ M = M+1
 
 
 // call feb 1
-@febunatchi.feb$ret.2
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb$ret.2
 D = A
 @SP
 A = M
@@ -279,9 +279,9 @@ M = D
 D = A
 @ARG
 M = M-D
-@febunatchi.feb
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb
 0; JMP
-(febunatchi.feb$ret.2)
+(code-generation/VM/examples/febunatchi/febunatchi.vm.feb$ret.2)
 
 
 // add
@@ -297,13 +297,13 @@ M = D+M
 M = M+1
 
 
-// goto febunatchi.feb$return
-@febunatchi.feb$return
+// goto code-generation/VM/examples/febunatchi/febunatchi.vm.feb$return
+@code-generation/VM/examples/febunatchi/febunatchi.vm.feb$return
 0; JMP
 
 
 // label base
-(febunatchi.feb$base)
+(code-generation/VM/examples/febunatchi/febunatchi.vm.feb$base)
 
 
 // push argument 0
@@ -320,10 +320,10 @@ M = M+1
 
 
 // label return
-(febunatchi.feb$return)
+(code-generation/VM/examples/febunatchi/febunatchi.vm.feb$return)
 
 
-// return (from function febunatchi.feb)
+// return (from function code-generation/VM/examples/febunatchi/febunatchi.vm.feb)
 @LCL
 D = M
 @R12
@@ -384,7 +384,7 @@ A = M
 
 
 // label end
-(febunatchi$end)
+(code-generation/VM/examples/febunatchi/febunatchi.vm$end)
 
 
 (END)

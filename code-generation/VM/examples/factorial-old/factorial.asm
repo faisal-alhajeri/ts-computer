@@ -3,6 +3,67 @@
 D = A
 @SP
 M = D
+// push constant 5
+@5
+D = A
+@SP
+A = M
+M = D
+@SP
+M = M+1
+
+
+// call factorial.fac 1
+@factorial$ret.1
+D = A
+@SP
+A = M
+M = D
+@LCL
+D = M
+@SP
+M = M+1
+A = M
+M = D
+@ARG
+D = M
+@SP
+M = M+1
+A = M
+M = D
+@THIS
+D = M
+@SP
+M = M+1
+A = M
+M = D
+@THAT
+D = M
+@SP
+M = M+1
+A = M
+M = D
+@SP
+M = M+1
+D = M
+@LCL
+M = D
+@ARG
+M = D
+@6
+D = A
+@ARG
+M = M-D
+@factorial.fac
+0; JMP
+(factorial$ret.1)
+
+
+// goto factorial$end
+@factorial$end
+0; JMP
+
+
 // function fac 1
 (factorial.fac)
 
@@ -154,7 +215,7 @@ M = M-D
 (factorial.fac$ret.1)
 
 
-// call mult.mult 2
+// call factorial.mult 2
 @factorial.fac$ret.2
 D = A
 @SP
@@ -195,7 +256,7 @@ M = D
 D = A
 @ARG
 M = M-D
-@mult.mult
+@factorial.mult
 0; JMP
 (factorial.fac$ret.2)
 
@@ -283,69 +344,8 @@ A = M
 0; JMP
 
 
-// push constant 3
-@3
-D = A
-@SP
-A = M
-M = D
-@SP
-M = M+1
-
-
-// call factorial.fac 1
-@main$ret.1
-D = A
-@SP
-A = M
-M = D
-@LCL
-D = M
-@SP
-M = M+1
-A = M
-M = D
-@ARG
-D = M
-@SP
-M = M+1
-A = M
-M = D
-@THIS
-D = M
-@SP
-M = M+1
-A = M
-M = D
-@THAT
-D = M
-@SP
-M = M+1
-A = M
-M = D
-@SP
-M = M+1
-D = M
-@LCL
-M = D
-@ARG
-M = D
-@6
-D = A
-@ARG
-M = M-D
-@factorial.fac
-0; JMP
-(main$ret.1)
-
-
-// goto main$end
-@main$end
-0; JMP
-
-
 // function mult 2
-(mult.mult)
+(factorial.mult)
 
 
 // push argument 0
@@ -451,7 +451,7 @@ M = D
 
 
 // label LOOP
-(mult.mult$LOOP)
+(factorial.mult$LOOP)
 
 
 // push temp 3
@@ -494,12 +494,12 @@ M = D
 M = M+1
 
 
-// if-goto mult.mult$END
+// if-goto factorial.mult$END
 @SP
 M = M-1
 A = M
 D = M
-@mult.mult$END
+@factorial.mult$END
 D; JNE
 
 
@@ -597,13 +597,13 @@ A = M
 M = D
 
 
-// goto mult.mult$LOOP
-@mult.mult$LOOP
+// goto factorial.mult$LOOP
+@factorial.mult$LOOP
 0; JMP
 
 
 // label END
-(mult.mult$END)
+(factorial.mult$END)
 
 
 // push temp 2
@@ -616,7 +616,7 @@ M = D
 M = M+1
 
 
-// return (from function mult.mult)
+// return (from function factorial.mult)
 @LCL
 D = M
 @R12
@@ -674,6 +674,10 @@ A = M-D
 D = M
 A = M
 0; JMP
+
+
+// label end
+(factorial$end)
 
 
 (END)

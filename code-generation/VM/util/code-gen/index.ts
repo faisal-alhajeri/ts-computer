@@ -63,8 +63,11 @@ export class VMCodeGenerator {
   }
 
   writeCall({ nVars, name }: { name: string; nVars: number }) {
+    if (name.split(".").length < 2) {
+      throw new Error(`function ${name} must be calleed with its file name `);
+    }
+
     const fPath = [this.filename, ...this.functionPath].join(".");
-    const calledPath = `${this.filename}.${name}`;
     this.returnCount[fPath] = (this.returnCount[fPath] ?? 0) + 1;
 
     const retunLabel = fPath + `$ret.${this.returnCount[fPath]}`;
@@ -112,7 +115,7 @@ export class VMCodeGenerator {
       `D = A`,
       `@ARG`,
       `M = M-D`,
-      `@${calledPath}`,
+      `@${name}`,
       `0; JMP`,
       `(${retunLabel})`,
       `\n`,
