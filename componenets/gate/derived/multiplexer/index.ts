@@ -32,4 +32,14 @@ export class MultiplexerGate extends Gate<Inputs, Outputs> {
     // if (inputs[1] === 0) return [inputs[0][0]];
     // else return [inputs[0][1]];
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    const [[x, y], selector] = inputs;
+
+    const div1 = this.andGate1.evalSync([y, selector])[0];
+    const notSelector = this.notGate.evalSync([selector])[0];
+    const div2 = this.andGate2.evalSync([x, notSelector])[0];
+
+    return this.orGate.evalSync([div1, div2]);
+  }
 }

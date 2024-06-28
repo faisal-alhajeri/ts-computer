@@ -42,10 +42,25 @@ export class MultiWayMultiplexerGate extends Gate<Inputs, Outputs> {
     }
 
     return [stage_result[0]];
+  }
 
-    // // TODO: add length checks
-    // const indexOfResultToChange = parseInt(select.join(""), 2);
+  evalSync(inputs: Inputs): Outputs {
+    const [inBits, selector] = inputs;
 
-    // return [inputs[indexOfResultToChange]];
+    let stage_result: BitArray[] = [...inBits];
+
+    for (let stage = 0; stage < this.selectorLength; stage++) {
+      const stage_multies = this.multies[stage];
+      const stage_selector = selector[this.selectorLength - (stage + 1)];
+
+      stage_result = stage_multies.map((gate, idx) => {
+        const offset = 2 * idx;
+        const x = stage_result[offset];
+        const y = stage_result[offset + 1];
+        return gate.evalSync([[x, y], stage_selector])[0];
+      });
+    }
+
+    return [stage_result[0]];
   }
 }

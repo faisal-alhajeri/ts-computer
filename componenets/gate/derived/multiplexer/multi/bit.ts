@@ -32,8 +32,20 @@ export class MultiBitMultiplexerGate extends Gate<Inputs, Outputs> {
     );
 
     return [res];
+  }
 
-    if (inputs[1] === 0) return [inputs[0][0]];
-    else return [inputs[0][1]];
+  evalSync(inputs: Inputs): Outputs {
+    const [[xBits, yBits], selector] = inputs;
+
+    if (xBits.length !== this.bitLength || yBits.length !== this.bitLength)
+      throw new Error(
+        `multi bit gate length error, expected (${this.bitLength}, ${this.bitLength}) but got (${xBits.length}, ${yBits.length})`
+      );
+
+    const res: BitArray = this.multies.map(
+      (gate, idx) => gate.evalSync([[xBits[idx], yBits[idx]], selector])[0]
+    );
+
+    return [res];
   }
 }
