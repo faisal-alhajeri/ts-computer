@@ -96,7 +96,7 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
     this.clocks[addressInt] =
       oldRegisterClock === undefined ? clock : ((oldRegisterClock ^ 1) as Bit);
 
-    register.eval([inBits, load, this.clocks[addressInt] as Bit]);
+    register.evalSync([inBits, load, this.clocks[addressInt] as Bit]);
     return [register.stored];
   }
 

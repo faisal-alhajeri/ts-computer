@@ -8,6 +8,7 @@
     "assembler-unix": "ts-node  ./code-generation/assembly/cli/index.ts",
     "vm-translator-unix": "ts-node  ./code-generation/VM/cli/index.ts",
     "machine": "ts-node  ./HACK-MACHINE/runner/index.ts",
+    "machine-sync": "ts-node  ./HACK-MACHINE/runner/sync/index.ts",
     "test": "jest"
   },
   "author": "",

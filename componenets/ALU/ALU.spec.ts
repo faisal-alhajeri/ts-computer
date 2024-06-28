@@ -30,7 +30,9 @@ describe("ALU gate", () => {
   async function testPairs({ pairs }: { pairs: ALUPair[] }) {
     for (const pair of pairs) {
       const out = await alu.eval(pair.inputs);
+      const outSync = alu.evalSync(pair.inputs);
       expect(out).toEqual(pair.outputs);
+      expect(outSync).toEqual(pair.outputs);
     }
   }
 

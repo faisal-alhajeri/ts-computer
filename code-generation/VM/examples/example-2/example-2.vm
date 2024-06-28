@@ -1,5 +1,5 @@
 
-push constant 10
+push constant 9
 push constant 6
 call example-2.add2 2
 // push constant 7
