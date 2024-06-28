@@ -9,21 +9,36 @@ export class HackCliRunner {
   public readonly machine = new HackMachine();
 
   async run({ rounds }: { rounds: number }) {
-    const file = readFileSync(this.filePath).toString();
-    const bin = file
-      .split("\n")
-      .map((bin) => bin.split("").map((bit) => parseInt(bit) as Bit));
+    const bin = this.loadBin();
+    const binLenght = bin.length;
 
-    // this.machine.reset();
-    this.machine.loadROM({ binary: bin });
     let i = 0;
-    while (i < rounds) {
+    while (this.binToInt(this.machine.pc) < binLenght) {
       await this.machine.round();
       i++;
     }
+    console.log({ rounds: i });
   }
 
   runSync({ rounds }: { rounds: number }) {
+    const bin = this.loadBin();
+    const binLenght = bin.length;
+    console.log({ binLenght });
+
+    let i = 0;
+    while (this.binToInt(this.machine.pc) < binLenght - 1) {
+      this.machine.roundSync();
+      i++;
+    }
+
+    console.log({ rounds: i });
+  }
+
+  private binToInt(bin: Bit[]): number {
+    return parseInt(bin.join(""), 2);
+  }
+
+  private loadBin() {
     const file = readFileSync(this.filePath).toString();
     const bin = file
       .split("\n")
@@ -31,10 +46,7 @@ export class HackCliRunner {
 
     // this.machine.reset();
     this.machine.loadROM({ binary: bin });
-    let i = 0;
-    while (i < rounds) {
-      this.machine.roundSync();
-      i++;
-    }
+
+    return bin;
   }
 }

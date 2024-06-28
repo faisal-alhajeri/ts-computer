@@ -64,6 +64,7 @@ export class VMCodeGenerator {
 
   writeCall({ nVars, name }: { name: string; nVars: number }) {
     const fPath = [this.filename, ...this.functionPath].join(".");
+    const calledPath = `${this.filename}.${name}`;
     this.returnCount[fPath] = (this.returnCount[fPath] ?? 0) + 1;
 
     const retunLabel = fPath + `$ret.${this.returnCount[fPath]}`;
@@ -111,7 +112,7 @@ export class VMCodeGenerator {
       `D = A`,
       `@ARG`,
       `M = M-D`,
-      `@${name}`,
+      `@${calledPath}`,
       `0; JMP`,
       `(${retunLabel})`,
       `\n`,
@@ -296,6 +297,8 @@ export class VMCodeGenerator {
     segment: VM_SEGMENT;
     index: string;
   }): string[] {
+    console.log({ segment, index });
+
     switch (segment) {
       case VM_SEGMENT.LOCAL:
       case VM_SEGMENT.ARG:

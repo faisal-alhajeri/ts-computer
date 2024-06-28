@@ -9,7 +9,10 @@ export class HackMachine {
 
   private inM: BitArray = new Array(16).fill(0);
   private loadM: Bit = 0;
-  private pc: BitArray = new Array(16).fill(0);
+  private _pc: BitArray = new Array(16).fill(0);
+  get pc() {
+    return this._pc;
+  }
   private addressM: BitArray = new Array(16).fill(0);
 
   private _clock: Bit = 0;
@@ -19,7 +22,7 @@ export class HackMachine {
   }
 
   reset() {
-    this.pc = new Array(16).fill(0);
+    this._pc = new Array(16).fill(0);
     this.cpu.reset();
   }
 
@@ -37,11 +40,11 @@ export class HackMachine {
     let [instruction] = await this.rom.eval([
       new Array(16).fill(0),
       0,
-      this.pc,
+      this._pc,
       clock,
     ]);
 
-    [this.inM, this.loadM, this.addressM, this.pc] = await this.cpu.eval([
+    [this.inM, this.loadM, this.addressM, this._pc] = await this.cpu.eval([
       this.inM,
       instruction,
       0,
@@ -69,11 +72,11 @@ export class HackMachine {
     let [instruction] = this.rom.evalSync([
       new Array(16).fill(0),
       0,
-      this.pc,
+      this._pc,
       clock,
     ]);
 
-    [this.inM, this.loadM, this.addressM, this.pc] = this.cpu.evalSync([
+    [this.inM, this.loadM, this.addressM, this._pc] = this.cpu.evalSync([
       this.inM,
       instruction,
       0,

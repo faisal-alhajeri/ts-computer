@@ -13,8 +13,8 @@ M = D
 M = M+1
 
 
-// push constant 6
-@6
+// push constant 2
+@2
 D = A
 @SP
 A = M
@@ -23,7 +23,7 @@ M = D
 M = M+1
 
 
-// call example-2.add2 2
+// call example-2.sub2 2
 @example-2$ret.1
 D = A
 @SP
@@ -64,7 +64,7 @@ M = D
 D = A
 @ARG
 M = M-D
-@example-2.add2
+@example-2.sub2
 0; JMP
 (example-2$ret.1)
 
@@ -74,8 +74,8 @@ M = M-D
 0; JMP
 
 
-// function add2 2
-(example-2.add2)
+// function sub2 2
+(example-2.sub2)
 
 
 // push argument 0
@@ -104,7 +104,7 @@ M = D
 M = M+1
 
 
-// add
+// sub
 @SP
 M = M-1
 A = M
@@ -112,12 +112,12 @@ D = M
 @SP
 M = M-1
 A = M
-M = D+M
+M = M-D
 @SP
 M = M+1
 
 
-// return (from function example-2.add2)
+// return (from function example-2.sub2)
 @LCL
 D = M
 @R12

@@ -1,4 +1,4 @@
-npm run vm-translator-unix ./code-generation/VM/examples/example-3/example-3.vm
-npm run assembler-unix  ./code-generation/VM/examples/example-3/example-3.asm
+npm run vm-translator-unix ./code-generation/VM/examples/febunatchi/febunatchi.vm
+npm run assembler-unix  ./code-generation/VM/examples/febunatchi/febunatchi.asm
 
-npm run machine ./code-generation/VM/examples/example-3/example-3.hack
+npm run machine-sync ./code-generation/VM/examples/febunatchi/febunatchi.hack

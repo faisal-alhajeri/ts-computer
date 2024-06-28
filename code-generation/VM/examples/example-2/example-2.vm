@@ -1,7 +1,7 @@
 
 push constant 9
-push constant 6
-call example-2.add2 2
+push constant 2
+call example-2.sub2 2
 // push constant 7
 // push constant 7
 // push constant 7
@@ -9,10 +9,10 @@ call example-2.add2 2
 goto exit
 
 
-function add2 2
+function sub2 2
     push argument 0
     push argument 1
-    add
+    sub
     return 
 
 label exit

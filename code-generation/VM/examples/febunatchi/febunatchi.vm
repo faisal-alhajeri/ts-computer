@@ -1,0 +1,32 @@
+push constant 20
+call feb 1
+
+goto end
+
+
+function feb 1
+    push argument 0
+    push constant 1
+    lte
+    if-goto base
+    
+
+    push argument 0
+    push constant 1
+    sub
+    call feb 1
+    push argument 0
+    push constant 2
+    sub
+    call feb 1
+    add
+    goto return
+
+    label base 
+    push argument 0
+
+    label return 
+    return 
+
+
+label end
