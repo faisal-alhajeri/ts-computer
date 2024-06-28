@@ -2,6 +2,9 @@ import { VM_ARETHMATIC, VM_INTRUCTION_TYPE, VM_SEGMENT } from "../types";
 import { VMCodeGenerator } from "../util/code-gen";
 import { VMParser } from "../util/parser";
 
+const BASE_FILE_NAME = "VM_BASE";
+const END_LABEL = "END";
+
 export class VMTranslator {
   private _code: string | undefined;
   private _filename: string | undefined;
@@ -20,22 +23,31 @@ export class VMTranslator {
   }
 
   init() {
+    const codeGen = new VMCodeGenerator({ filename: BASE_FILE_NAME });
     this._lines.push(
       //
       `// init vars`,
       `@256`,
       `D = A`,
       `@SP`,
-      `M = D`
+      `M = D`,
+      "\n",
+      ...codeGen.writePushPop({
+        type: VM_INTRUCTION_TYPE.C_PUSH,
+        segment: VM_SEGMENT.CONSTANT,
+        index: "0",
+      }),
+      ...codeGen.writeCall({ name: "Main.main", nVars: 1 }),
+      ...codeGen.writeGoto({ label: END_LABEL })
     );
   }
 
   end() {
+    const codeGen = new VMCodeGenerator({ filename: BASE_FILE_NAME });
     this._lines.push(
       // convition for ending the program
-      `(END)`,
-      `@END`,
-      `0; JMP`,
+      ...codeGen.writeLabel({ label: END_LABEL }),
+      ...codeGen.writeGoto({ label: END_LABEL }),
       `\n`
     );
   }

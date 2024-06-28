@@ -331,6 +331,10 @@ export class VMCodeGenerator {
         return [`@${index}`, `D = A`];
       case VM_SEGMENT.STATIC:
         return [`@${this.filename}.${index}`, `D = M`];
+      default:
+        throw new Error(
+          `${this.filename}: (segemnt ${segment}) (index ${index}) is wrong`
+        );
     }
   }
 

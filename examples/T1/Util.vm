@@ -1,0 +1,7 @@
+
+function double 1
+    push argument 0
+    push argument 0 
+    add
+    return
+

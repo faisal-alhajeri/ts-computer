@@ -3,7 +3,7 @@ export class SymbolTable {
     this.prefill();
   }
 
-  private entries: Record<string, string> = {};
+  public readonly entries: Record<string, string> = {};
 
   addEntry({ address, symbol }: { symbol: string; address: string }) {
     const old = this.entries[symbol];

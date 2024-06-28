@@ -3,8 +3,8 @@
 D = A
 @SP
 M = D
-// push constant 5
-@5
+// push constant 7
+@7
 D = A
 @SP
 A = M

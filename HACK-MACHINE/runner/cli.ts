@@ -27,9 +27,10 @@ export class HackCliRunner {
 
     let i = 0;
     while (this.binToInt(this.machine.pc) < binLenght - 1) {
-      console.log({ pc: this.binToInt(this.machine.pc) });
+      // console.log({ pc: this.binToInt(this.machine.pc) });
 
       this.machine.roundSync();
+      // await sleep(100);
       i++;
     }
 
@@ -51,4 +52,8 @@ export class HackCliRunner {
 
     return bin;
   }
+}
+
+async function sleep(time: number) {
+  return await new Promise((res) => setTimeout(res, time));
 }

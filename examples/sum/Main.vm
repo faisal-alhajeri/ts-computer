@@ -1,0 +1,5 @@
+
+function main 0
+    push constant 10
+    call Sum.sum 1
+    return

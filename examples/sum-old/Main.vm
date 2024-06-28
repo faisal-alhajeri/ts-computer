@@ -1,0 +1,22 @@
+function sum 1
+    push argument 0
+    push constant 1
+    eq
+    if-goto base
+    push argument 0
+    push constant 1
+    sub
+    call Main.sum 1
+    gotoo re
+
+    label base
+    push constant 1
+
+    label re
+    return
+
+function main 0
+    push constant 2
+    call Main.sum 1
+    return
+

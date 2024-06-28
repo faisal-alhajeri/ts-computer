@@ -1,0 +1,20 @@
+
+function sum 1
+    push argument 0
+    push constant 1 
+    eq
+    if-goto base
+    push argument 0 
+    push argument 0 
+    push constant 1
+    sub
+    call Sum.sum 1
+    add
+    goto return 
+
+    label base
+    push constant 1
+
+    label return 
+    return
+    
