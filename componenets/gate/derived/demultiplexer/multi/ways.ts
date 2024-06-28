@@ -21,4 +21,17 @@ export class MultiWayDeMultiplexerGate extends Gate<Inputs, Outputs> {
 
     return result;
   }
+
+  evalSync([input, select]: Inputs): Outputs {
+    // TODO: add length check
+    const result: Outputs = new Array(Math.pow(2, this.m))
+      .fill(0)
+      .map(() => new Array(this.n).fill(0));
+
+    const indexOfResultToChange = parseInt(select.join(""), 2);
+
+    result[indexOfResultToChange] = input;
+
+    return result;
+  }
 }

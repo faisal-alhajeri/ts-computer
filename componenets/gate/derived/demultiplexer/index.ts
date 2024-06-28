@@ -11,4 +11,12 @@ export class DeMultiplexerGate extends Gate<Inputs, Outputs> {
 
     return res;
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    const res: Outputs = [0, 0];
+
+    res[inputs[1]] = inputs[0][0];
+
+    return res;
+  }
 }
