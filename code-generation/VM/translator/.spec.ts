@@ -111,10 +111,14 @@ pop temp 2
       `\n`,
     ];
 
-    const trans = new VMTranslator({ code: vmCode, filename: "someFile" });
+    const trans = new VMTranslator();
 
-    const result = trans.translate();
+    trans.code = vmCode;
+    trans.filename = "someFile";
+    trans.init();
+    trans.translate();
+    trans.end();
 
-    expect(result).toEqual(expected);
+    expect(trans.lines).toEqual(expected);
   });
 });

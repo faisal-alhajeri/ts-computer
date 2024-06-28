@@ -27,9 +27,16 @@ export class CLI {
     filename: string;
     code: string;
   }): string {
-    const translator = new VMTranslator({ filename, code });
+    const translator = new VMTranslator();
 
-    const assembly = translator.translate().join("\n");
+    translator.code = code;
+    translator.filename = filename;
+
+    translator.init();
+    translator.translate();
+    translator.end();
+
+    const assembly = translator.lines.join("\n");
 
     console.log({ assembly });
 

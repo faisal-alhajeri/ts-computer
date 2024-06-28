@@ -3,42 +3,65 @@ import { VMCodeGenerator } from "../util/code-gen";
 import { VMParser } from "../util/parser";
 
 export class VMTranslator {
-  private code: string;
-  private filename: string;
+  private _code: string | undefined;
+  private _filename: string | undefined;
 
-  constructor(props: { code: string; filename: string }) {
-    this.code = props.code;
-    this.filename = props.filename;
+  private _lines: string[] = [];
+  get lines(): string[] {
+    return [...this._lines];
   }
 
-  translate() {
-    if (this.code === undefined) throw new Error(`no code added to translator`);
+  set filename(f: string) {
+    this._filename = f;
+  }
 
-    const parser = new VMParser(this.code);
-    const codeGen = new VMCodeGenerator({ filename: this.filename });
+  set code(code: string) {
+    this._code = code;
+  }
 
-    const lines: string[] = [
+  init() {
+    this._lines.push(
       //
       `// init vars`,
       `@256`,
       `D = A`,
       `@SP`,
-      `M = D`,
-    ];
+      `M = D`
+    );
+  }
+
+  end() {
+    this._lines.push(
+      // convition for ending the program
+      `(END)`,
+      `@END`,
+      `0; JMP`,
+      `\n`
+    );
+  }
+
+  translate() {
+    if (this._code === undefined)
+      throw new Error(`no code added to translator`);
+    if (this._filename === undefined)
+      throw new Error(`no filename added to translator`);
+
+    const parser = new VMParser(this._code);
+    const codeGen = new VMCodeGenerator({ filename: this._filename });
 
     while (parser.hasMoreLines()) {
       parser.advance();
 
       switch (parser.instructionType()) {
         case VM_INTRUCTION_TYPE.C_ARETHMATIC:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeArethmatic({
               command: parser.arg1() as VM_ARETHMATIC,
             })
           );
           break;
         case VM_INTRUCTION_TYPE.C_PUSH:
-          lines.push(
+          this._lines.push(
             ...codeGen.writePushPop({
               type: VM_INTRUCTION_TYPE.C_PUSH,
               segment: parser.arg1() as VM_SEGMENT,
@@ -47,7 +70,7 @@ export class VMTranslator {
           );
           break;
         case VM_INTRUCTION_TYPE.C_POP:
-          lines.push(
+          this._lines.push(
             ...codeGen.writePushPop({
               type: VM_INTRUCTION_TYPE.C_POP,
               segment: parser.arg1() as VM_SEGMENT,
@@ -56,28 +79,28 @@ export class VMTranslator {
           );
           break;
         case VM_INTRUCTION_TYPE.C_GOTO:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeGoto({
               label: parser.arg1(),
             })
           );
           break;
         case VM_INTRUCTION_TYPE.C_IF:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeIf({
               label: parser.arg1(),
             })
           );
           break;
         case VM_INTRUCTION_TYPE.C_LABEL:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeLabel({
               label: parser.arg1(),
             })
           );
           break;
         case VM_INTRUCTION_TYPE.C_FUNCTION:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeFunction({
               name: parser.arg1(),
               nVars: parseInt(parser.arg2()),
@@ -85,7 +108,7 @@ export class VMTranslator {
           );
           break;
         case VM_INTRUCTION_TYPE.C_CALL:
-          lines.push(
+          this._lines.push(
             ...codeGen.writeCall({
               name: parser.arg1(),
               nVars: parseInt(parser.arg2()),
@@ -93,21 +116,12 @@ export class VMTranslator {
           );
           break;
         case VM_INTRUCTION_TYPE.C_RETURN:
-          lines.push(...codeGen.writeReturn());
+          this._lines.push(...codeGen.writeReturn());
           break;
 
         default:
           throw new Error(`unimplemented case (${parser.instructionType()})`);
       }
     }
-
-    lines.push(
-      // convition for ending the program
-      `(END)`,
-      `@END`,
-      `0; JMP`,
-      `\n`
-    );
-    return lines;
   }
 }

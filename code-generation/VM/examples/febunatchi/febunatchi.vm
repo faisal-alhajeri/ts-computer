@@ -1,4 +1,4 @@
-push constant 20
+push constant 10
 call feb 1
 
 goto end

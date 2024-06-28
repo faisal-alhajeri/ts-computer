@@ -297,8 +297,6 @@ export class VMCodeGenerator {
     segment: VM_SEGMENT;
     index: string;
   }): string[] {
-    console.log({ segment, index });
-
     switch (segment) {
       case VM_SEGMENT.LOCAL:
       case VM_SEGMENT.ARG:
