@@ -10,4 +10,8 @@ export class NotGate extends Gate<Inputs, Outputs> {
   override async eval(inputs: Inputs): Promise<Outputs> {
     return await this.nandGate.eval([inputs[0], inputs[0]]);
   }
+
+  evalSync(inputs: Inputs): Outputs {
+    return this.nandGate.evalSync([inputs[0], inputs[0]]);
+  }
 }
