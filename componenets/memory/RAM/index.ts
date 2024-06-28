@@ -71,30 +71,32 @@ export class RAM extends Gate<RAMInputs, RAMOutputs> {
 
     await register.eval([inBits, load, this.clocks[addressInt] as Bit]);
 
-    // const loadAfterDemultiplexer: BitArray[] =
-    //   await this.loadDemultiplexer.eval([[load], address]);
+    return [register.stored];
+  }
 
-    // for (let i = 0; i < this.registers.length; i++) {
-    //   await this.registers[i].eval([
-    //     inBits,
-    //     loadAfterDemultiplexer[i][0],
-    //     clock,
-    //   ]);
-    // }
-    // const resultOfRegisterIn: BitArray[] = await Promise.all(
-    //   this.registers.map(
-    //     async (register, idx) =>
-    //       await register
-    //         .eval([inBits, loadAfterDemultiplexer[idx][0], clock])
-    //         .then(([bits]) => bits)
-    //   )
-    // );
+  evalSync([inBits, load, address, clock]: RAMInputs): RAMOutputs {
+    if (inBits.length !== this.bitLength) {
+      throw new Error(
+        `number of bits in register is not right, need (${this.bitLength}) and we have (${inBits.length})`
+      );
+    }
+    const addressInt = parseInt(
+      address.map((bit) => bit.toString()).join(""),
+      2
+    );
+    const register = this.registers[addressInt];
 
-    // const afreMulti: BitArray = await this.outPutMultiplexer
-    //   .eval([this.registers.map((r) => r.stored), address])
-    //   .then(([bits]) => bits);
+    if (this.last_clock !== undefined && this.last_clock === clock) {
+      return [register.stored];
+    }
 
-    // return [afreMulti];
+    this.round++;
+    this.last_clock = clock;
+    const oldRegisterClock = this.clocks[addressInt];
+    this.clocks[addressInt] =
+      oldRegisterClock === undefined ? clock : ((oldRegisterClock ^ 1) as Bit);
+
+    register.eval([inBits, load, this.clocks[addressInt] as Bit]);
     return [register.stored];
   }
 

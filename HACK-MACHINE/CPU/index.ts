@@ -134,6 +134,91 @@ export class CPU extends Gate<CPUInputs, CPUOutputs> {
     ];
   }
 
+  evalSync([inM, instruction, reset, clock]: CPUInputs): CPUOutputs {
+    const instructionDetails = this.getInstructionDetails(instruction);
+
+    // decide ALU inputs
+    const aluSecondInput = this.alu_second_input_mult.evalSync([
+      [this.A_REGISTER.stored, inM],
+      instructionDetails.c_a,
+    ])[0];
+
+    // get ALU result
+    const [[alu_result], [isZero, isNg]] = this.ALU.evalSync([
+      [this.D_REGISTER.stored, aluSecondInput],
+      instructionDetails.c_alu_control,
+    ]);
+
+    // save into D register if specifed in dest
+    this.D_REGISTER.evalSync([
+      alu_result,
+      instructionDetails.type === 1 ? instructionDetails.c_dest_d : 0, // TODO: change it later
+      clock,
+    ]);
+
+    // decide the A_REGISTER input and load
+    const notType: Bit = this.aLoadNot.evalSync([instructionDetails.type])[0];
+    const aload: Bit = this.aLoadOr.evalSync([
+      instructionDetails.c_dest_a,
+      notType,
+    ])[0];
+    const aInput: BitArray = this.aInputMult.evalSync([
+      [[0, ...instructionDetails.a_data], alu_result],
+      instructionDetails.type,
+    ])[0];
+
+    this.A_REGISTER.evalSync([aInput, aload, clock]);
+
+    // decide to write on m or not
+    const writeM = this.writeMAnd.evalSync([
+      instructionDetails.type,
+      instructionDetails.c_dest_m,
+    ])[0];
+
+    // pc evalSync
+    const [isNotZero, isNotNG, isLsOrEqualZero] = [
+      this.notZeroGate.evalSync([isZero])[0],
+      this.notNegative.evalSync([isNg])[0],
+      this.lsOrEqualGate.evalSync([isZero, isNg])[0],
+    ];
+
+    const isBgThanZero = this.notLsOrEqualGate.evalSync([isLsOrEqualZero])[0];
+
+    const [[pcLoadFromC]] = this.pcLoadFromCMult.evalSync([
+      [
+        [0], // no jump
+        [isBgThanZero], // bigger than zero (x > 0)
+        [isZero], // equal zero (x === 0)
+        [isNotNG], // bigger or equal (x >= 0)
+        [isNg], // smaller than zero (x < 0)
+        [isNotZero], // not equal zero (x !== 0)
+        [isLsOrEqualZero], // less or equal zerp (x <= 0)
+        [1], // always jump
+      ],
+      instructionDetails.c_jmp,
+    ]);
+
+    const pcLaodFromA: Bit = instructionDetails.type;
+
+    const [pcLoad] = this.pcLoadFromAOrCMult.evalSync([
+      [pcLaodFromA, pcLoadFromC],
+      instructionDetails.type,
+    ]);
+
+    const [incr] = this.notPcLoadGate.evalSync([pcLoad]);
+
+    this.PC.evalSync([this.A_REGISTER.stored, [pcLoad, incr, reset], clock]);
+
+    // console.log({ d: this.D_REGISTER.stored, pc: this.PC.stored });
+
+    return [
+      alu_result,
+      writeM,
+      this.A_REGISTER.stored.slice(1),
+      this.PC.stored.slice(1),
+    ];
+  }
+
   reset() {
     this.PC.reset();
   }

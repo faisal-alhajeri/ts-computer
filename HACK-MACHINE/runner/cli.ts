@@ -22,4 +22,19 @@ export class HackCliRunner {
       i++;
     }
   }
+
+  runSync({ rounds }: { rounds: number }) {
+    const file = readFileSync(this.filePath).toString();
+    const bin = file
+      .split("\n")
+      .map((bin) => bin.split("").map((bit) => parseInt(bit) as Bit));
+
+    // this.machine.reset();
+    this.machine.loadROM({ binary: bin });
+    let i = 0;
+    while (i < rounds) {
+      this.machine.roundSync();
+      i++;
+    }
+  }
 }

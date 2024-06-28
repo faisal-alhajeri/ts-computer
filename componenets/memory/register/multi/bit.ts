@@ -44,6 +44,22 @@ export class MultiBitRegister extends Gate<
     return [result];
   }
 
+  evalSync(inputs: MultiBitRegisterInputs): MultiBitRegisterOutputs {
+    const [inBits, load, clock] = inputs;
+
+    if (inBits.length !== this.bits) {
+      throw new Error(
+        `number of bits in register is not right, need (${this.bits}) and we have (${inBits.length})`
+      );
+    }
+
+    const result: BitArray = this.registers.map(
+      (gate, idx) => gate.evalSync([inBits[idx], load, clock])[0]
+    );
+
+    return [result];
+  }
+
   load(bits: BitArray) {
     if (bits.length !== this.registers.length)
       throw new Error(

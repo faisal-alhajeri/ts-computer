@@ -55,6 +55,32 @@ export class HackMachine {
     }
   }
 
+  roundSync() {
+    // tik new clock
+    const clock = this.clock;
+
+    [this.inM] = this.ram.evalSync([
+      this.inM,
+      this.loadM,
+      this.addressM,
+      clock,
+    ]);
+
+    let [instruction] = this.rom.evalSync([
+      new Array(16).fill(0),
+      0,
+      this.pc,
+      clock,
+    ]);
+
+    [this.inM, this.loadM, this.addressM, this.pc] = this.cpu.evalSync([
+      this.inM,
+      instruction,
+      0,
+      clock,
+    ]);
+  }
+
   loadRAM({ binary, offset = 0 }: { binary: BitArray[]; offset?: number }) {
     this.ram.load({ binary, offset });
   }

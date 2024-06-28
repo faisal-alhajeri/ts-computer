@@ -49,7 +49,7 @@ describe("hack machine", () => {
       ],
     });
     await runBin({ bin, machine });
-    R2 = machine.inspectRAM({ offset: 2 });
+    R2 = machine.inspectRAM({ offset: 2 })[0];
     expect(R2).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1]);
 
     machine.reset();
@@ -60,7 +60,7 @@ describe("hack machine", () => {
       ],
     });
     await runBin({ bin, machine });
-    R2 = machine.inspectRAM({ offset: 2 });
+    R2 = machine.inspectRAM({ offset: 2 })[0];
     expect(R2).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]);
   });
 
@@ -94,15 +94,12 @@ describe("hack machine", () => {
       "1110101010000111",
     ];
 
-    let R1: BitArray;
-
     machine.reset();
     await machine.loadRAM({
       binary: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]],
     });
     await runBin({ bin, machine, rounds: 200 });
-    let R0 = machine.inspectRAM({ offset: 0 });
-    R1 = machine.inspectRAM({ offset: 1 });
+    let [R0, R1] = machine.inspectRAM({ offset: 0, length: 2 });
     console.log({ R0, R1 });
 
     expect(R1).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0]);
@@ -141,13 +138,7 @@ describe("hack machine", () => {
       ],
     });
     await runBin({ bin, machine, rounds: 200 });
-    let result = [
-      machine.inspectRAM({ offset: 9 }),
-      machine.inspectRAM({ offset: 10 }),
-      machine.inspectRAM({ offset: 11 }),
-      machine.inspectRAM({ offset: 12 }),
-      machine.inspectRAM({ offset: 13 }),
-    ];
+    let result = machine.inspectRAM({ offset: 9, length: 5 });
 
     expect(result).toEqual([
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

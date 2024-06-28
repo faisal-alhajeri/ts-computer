@@ -27,6 +27,16 @@ export class Register extends Gate<RegisterInputs, RegisterOutputs> {
     return [result];
   }
 
+  evalSync(inputs: RegisterInputs): RegisterOutputs {
+    const [inBit, load, clock] = inputs;
+    const toFeedDFF: Bit = this.loadMultiplexer.evalSync([
+      [this.dff.stored, inBit],
+      load,
+    ])[0];
+    const result: Bit = this.dff.evalSync([toFeedDFF, clock])[0];
+    return [result];
+  }
+
   load(bit: Bit) {
     this.dff.load(bit);
   }

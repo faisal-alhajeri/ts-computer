@@ -61,6 +61,28 @@ export class PC extends Gate<PCInputs, PCOutputs> {
     return await this.register.eval([afterMulti, registerLoad, clock]);
   }
 
+  evalSync([inBits, [load, inc, reset], clock]: PCInputs): PCOutputs {
+    const zero = Gate.zero(this.bitLength);
+    const one = Gate.zero(this.bitLength);
+    one[this.bitLength - 1] = 1;
+    const sotred = this.register.stored;
+
+    const addition = this.additionGate.evalSync([one, sotred])[0];
+
+    const afterMulti: BitArray = this.inMultiplexer.evalSync([
+      [inBits, zero, addition, zero, inBits, zero, inBits, zero],
+      [load, inc, reset],
+    ])[0];
+
+    const registerLoad = this.registerLoadOr.evalSync([
+      [load],
+      [inc],
+      [reset],
+    ])[0][0];
+
+    return this.register.evalSync([afterMulti, registerLoad, clock]);
+  }
+
   reset() {
     this.register.load(new Array(16).fill(0));
   }
