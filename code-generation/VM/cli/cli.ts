@@ -38,13 +38,15 @@ export class CLI {
           .map((f) => f.name),
         outputFile: path.join(workingDir, "Main.asm"),
       };
-    } else {
+    } else if (parsed.ext === ".vm") {
       return {
         mode: "file",
         workingDir: path.join(parsed.dir),
         file: parsed.name,
         outputFile: path.join(parsed.dir, `${parsed.name}.asm`),
       };
+    } else {
+      throw new Error(`unsupported file extension ${parsed.name}${parsed.ext}`);
     }
   }
 
