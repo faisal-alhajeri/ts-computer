@@ -3,10 +3,10 @@ import * as path from "path";
 import { VMTranslator } from "../translator";
 
 export class CLI {
-  constructor(private filePath: string) {}
+  constructor(private dirPath: string) {}
 
   run() {
-    const { outputName, files, workingDir } = this.parseFile(this.filePath);
+    const { outputName, files, workingDir } = this.parseFile(this.dirPath);
 
     const translator = new VMTranslator();
     translator.init();
@@ -32,52 +32,16 @@ export class CLI {
     return content;
   }
 
-  private generate({
-    code,
-    filename,
-  }: {
-    filename: string;
-    code: string;
-  }): string {
-    const translator = new VMTranslator();
-
-    translator.code = code;
-    translator.filename = filename;
-
-    translator.init();
-    translator.translate();
-    translator.end();
-
-    const assembly = translator.lines.join("\n");
-
-    console.log({ assembly });
-
-    return assembly;
-  }
-
   private parseFile(filePath: string) {
     const parsed = path.parse(filePath);
-    const mode = parsed.ext === "" ? "dir" : "file";
 
-    const workingDir =
-      mode === "file" ? parsed.dir : path.join(parsed.dir, parsed.name);
+    const workingDir = path.join(parsed.dir, parsed.name);
 
-    const outputFile = path.join(workingDir, `${parsed.name}.asm`);
-    console.log({ parsed });
+    const outputFile = path.join(workingDir, `Main.asm`);
 
-    const files =
-      mode === "file"
-        ? [parsed]
-        : readdirSync(workingDir)
-            .map((f) => path.parse(f))
-            .filter((f) => f.ext === ".vm");
-
-    if (mode === "file") {
-      if (parsed.ext !== ".vm") {
-        throw new Error("File Extension should be .vm");
-      }
-    } else {
-    }
+    const files = readdirSync(workingDir)
+      .map((f) => path.parse(f))
+      .filter((f) => f.ext === ".vm");
 
     console.log({ workingDir, outputFile, files });
     return { workingDir, files, outputName: outputFile };
