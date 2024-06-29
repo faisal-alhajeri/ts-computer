@@ -3,26 +3,18 @@ import * as path from "path";
 import { VMTranslator } from "../translator";
 
 export class CLI {
-  constructor(private dirPath: string) {}
+  constructor(private path: string) {}
 
   run() {
-    const { outputName, files, workingDir } = this.parseFile(this.dirPath);
+    const mode = this.parsePath({ path: this.path });
 
-    const translator = new VMTranslator();
-    translator.init();
-    files.forEach((filename) => {
-      const code = this.openFile(
-        path.join(workingDir, `${filename.name}${filename.ext}`)
-      );
+    const lines =
+      mode.mode === "dir"
+        ? this.genDir({ files: mode.files, workingDir: mode.workingDir })
+        : this.genFile({ file: mode.file, workingDir: mode.workingDir });
 
-      translator.code = code;
-      translator.filename = filename.name;
-
-      translator.translate();
-    });
-    translator.end();
-    const assembly = translator.lines.join("\n");
-    this.save({ assembly, fileName: outputName });
+    const assembly = lines.join("\n");
+    this.save({ assembly, fileName: mode.outputFile });
   }
 
   private openFile(name: string): string {
@@ -32,22 +24,77 @@ export class CLI {
     return content;
   }
 
-  private parseFile(filePath: string) {
-    const parsed = path.parse(filePath);
+  private parsePath({ path: _path }: { path: string }): ParsedPath {
+    const parsed = path.parse(_path);
 
-    const workingDir = path.join(parsed.dir, parsed.name);
+    if (parsed.ext === "") {
+      const workingDir = path.join(parsed.dir, parsed.name);
+      return {
+        mode: "dir",
+        workingDir: workingDir,
+        files: readdirSync(workingDir)
+          .map((f) => path.parse(f))
+          .filter((f) => f.ext === ".vm")
+          .map((f) => f.name),
+        outputFile: path.join(workingDir, "Main.asm"),
+      };
+    } else {
+      return {
+        mode: "file",
+        workingDir: path.join(parsed.dir),
+        file: parsed.name,
+        outputFile: path.join(parsed.dir, `${parsed.name}.asm`),
+      };
+    }
+  }
 
-    const outputFile = path.join(workingDir, `Main.asm`);
+  private genFile({ file, workingDir }: { workingDir: string; file: string }) {
+    const translator = new VMTranslator();
+    const code = this.openFile(path.join(workingDir, `${file}.vm`));
+    translator.code = code;
+    translator.filename = file;
+    translator.translate();
 
-    const files = readdirSync(workingDir)
-      .map((f) => path.parse(f))
-      .filter((f) => f.ext === ".vm");
+    return translator.lines;
+  }
 
-    console.log({ workingDir, outputFile, files });
-    return { workingDir, files, outputName: outputFile };
+  private genDir({
+    files,
+    workingDir,
+  }: {
+    workingDir: string;
+    files: string[];
+  }) {
+    const translator = new VMTranslator();
+    translator.initDir();
+    files.forEach((filename) => {
+      const code = this.openFile(path.join(workingDir, `${filename}.vm`));
+
+      translator.code = code;
+      translator.filename = filename;
+
+      translator.translate();
+    });
+    translator.end();
+
+    return translator.lines;
   }
 
   private save({ assembly, fileName }: { assembly: string; fileName: string }) {
     writeFileSync(fileName, assembly);
   }
 }
+
+type ParsedPath =
+  | {
+      mode: "dir";
+      workingDir: string;
+      files: string[];
+      outputFile: string;
+    }
+  | {
+      mode: "file";
+      workingDir: string;
+      file: string;
+      outputFile: string;
+    };

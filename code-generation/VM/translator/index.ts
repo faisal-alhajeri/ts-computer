@@ -22,7 +22,7 @@ export class VMTranslator {
     this._code = code;
   }
 
-  init() {
+  initDir() {
     const codeGen = new VMCodeGenerator({ filename: BASE_FILE_NAME });
     this._lines.push(
       //
