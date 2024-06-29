@@ -3,6 +3,8 @@
 D = A
 @SP
 M = D
+@FP
+M = D
 
 
 // push constant 0
@@ -45,14 +47,20 @@ D = M
 M = M+1
 A = M
 M = D
+@FP
+D = M
+@SP
+M = M+1
+A = M
+M = D
 @SP
 M = M+1
 D = M
-@LCL
+@FP
 M = D
 @ARG
 M = D
-@6
+@7
 D = A
 @ARG
 M = M-D
@@ -110,14 +118,20 @@ D = M
 M = M+1
 A = M
 M = D
+@FP
+D = M
+@SP
+M = M+1
+A = M
+M = D
 @SP
 M = M+1
 D = M
-@LCL
+@FP
 M = D
 @ARG
 M = D
-@6
+@7
 D = A
 @ARG
 M = M-D
@@ -127,16 +141,9 @@ M = M-D
 
 
 // return (from function Main.main)
-@LCL
+@FP
 D = M
 @R12
-M = D
-@5
-D = A
-@R12
-A = M-D
-D = M
-@R13
 M = D
 @SP
 M = M-1
@@ -154,30 +161,37 @@ D = A
 @R12
 A = M-D
 D = M
-@THAT
+@FP
 M = D
 @2
 D = A
 @R12
 A = M-D
 D = M
-@THIS
+@THAT
 M = D
 @3
 D = A
 @R12
 A = M-D
 D = M
-@ARG
+@THIS
 M = D
 @4
 D = A
 @R12
 A = M-D
 D = M
-@LCL
+@ARG
 M = D
 @5
+D = A
+@R12
+A = M-D
+D = M
+@LCL
+M = D
+@6
 D = A
 @R12
 A = M-D
@@ -323,14 +337,20 @@ D = M
 M = M+1
 A = M
 M = D
+@FP
+D = M
+@SP
+M = M+1
+A = M
+M = D
 @SP
 M = M+1
 D = M
-@LCL
+@FP
 M = D
 @ARG
 M = D
-@6
+@7
 D = A
 @ARG
 M = M-D
@@ -376,16 +396,9 @@ M = M+1
 
 
 // return (from function Sum.sum)
-@LCL
+@FP
 D = M
 @R12
-M = D
-@5
-D = A
-@R12
-A = M-D
-D = M
-@R13
 M = D
 @SP
 M = M-1
@@ -403,30 +416,37 @@ D = A
 @R12
 A = M-D
 D = M
-@THAT
+@FP
 M = D
 @2
 D = A
 @R12
 A = M-D
 D = M
-@THIS
+@THAT
 M = D
 @3
 D = A
 @R12
 A = M-D
 D = M
-@ARG
+@THIS
 M = D
 @4
 D = A
 @R12
 A = M-D
 D = M
-@LCL
+@ARG
 M = D
 @5
+D = A
+@R12
+A = M-D
+D = M
+@LCL
+M = D
+@6
 D = A
 @R12
 A = M-D

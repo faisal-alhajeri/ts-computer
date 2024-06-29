@@ -44,6 +44,7 @@ export class SymbolTable {
     this.addEntry({ symbol: "R14", address: "14" });
     this.addEntry({ symbol: "R15", address: "15" });
     this.addEntry({ symbol: "SP", address: "0" });
+    this.addEntry({ symbol: "FP", address: "5" });
     this.addEntry({ symbol: "LCL", address: "1" });
     this.addEntry({ symbol: "ARG", address: "2" });
     this.addEntry({ symbol: "THIS", address: "3" });

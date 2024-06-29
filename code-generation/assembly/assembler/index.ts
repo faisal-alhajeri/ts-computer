@@ -77,8 +77,6 @@ export class HackAssembler {
       }
     }
 
-    console.log({ s: this.symbolTable.entries });
-
     return lines.join("\n");
   }
 

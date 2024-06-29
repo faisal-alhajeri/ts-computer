@@ -5,6 +5,8 @@ import {
   vmSegmentsMapping,
 } from "../../types";
 
+const STACK_FRAME_SIZE = 6;
+
 /**
  * generates code from VM spec to hack assembly
  */
@@ -15,14 +17,6 @@ export class VMCodeGenerator {
 
   constructor(props: { filename: string }) {
     this.filename = props.filename;
-  }
-
-  enterFunction(f: string) {
-    this.functionPath.push(f);
-  }
-
-  quitFunction() {
-    this.functionPath.pop();
   }
 
   writePushPop({
@@ -104,14 +98,20 @@ export class VMCodeGenerator {
       `M = M+1`,
       `A = M`,
       `M = D`,
+      `@FP`,
+      `D = M`,
+      `@SP`,
+      `M = M+1`,
+      `A = M`,
+      `M = D`,
       `@SP`,
       `M = M+1`,
       `D = M`,
-      `@LCL`,
+      `@FP`,
       `M = D`,
       `@ARG`,
       `M = D`,
-      `@${5 + nVars}`, // TODO: change it later
+      `@${STACK_FRAME_SIZE + nVars}`, // TODO: change it later
       `D = A`,
       `@ARG`,
       `M = M-D`,
@@ -128,22 +128,22 @@ export class VMCodeGenerator {
     return [
       //
       `// return (from function ${currentFPath})`,
-      `@LCL`,
+      `@FP`,
       `D = M`,
-      // R12 will be the current LCL (end of frame)
+      // R12 will be the current FP (end of frame)
       `@R12`,
       `M = D`,
 
-      // R13 will be the return address
-      `@5`,
-      `D = A`,
-      `@R12`,
-      `A = M-D`,
-      `D = M`,
-      `@R13`,
-      `M = D`,
+      // // R13 will be the return address
+      // `@${STACK_FRAME_SIZE}`,
+      // `D = A`,
+      // `@R12`,
+      // `A = M-D`,
+      // `D = M`,
+      // `@R13`,
+      // `M = D`,
 
-      // put the current sp into arg, which will be the sp later
+      // put the current sp vlaue into arg, which will be the sp later (the returned value)
       `@SP`,
       `M = M-1`,
       `A = M`,
@@ -158,8 +158,17 @@ export class VMCodeGenerator {
       `@SP`,
       `M = D`,
 
-      // reposition THAT
+      // reposition FP
       `@1`,
+      `D = A`,
+      `@R12`,
+      `A = M-D`,
+      `D = M`,
+      `@FP`,
+      `M = D`,
+
+      // reposition THAT
+      `@2`,
       `D = A`,
       `@R12`,
       `A = M-D`,
@@ -168,7 +177,7 @@ export class VMCodeGenerator {
       `M = D`,
 
       // reposition THIS
-      `@2`,
+      `@3`,
       `D = A`,
       `@R12`,
       `A = M-D`,
@@ -177,7 +186,7 @@ export class VMCodeGenerator {
       `M = D`,
 
       // reposition ARG
-      `@3`,
+      `@4`,
       `D = A`,
       `@R12`,
       `A = M-D`,
@@ -186,7 +195,7 @@ export class VMCodeGenerator {
       `M = D`,
 
       // reposition LCL
-      `@4`,
+      `@5`,
       `D = A`,
       `@R12`,
       `A = M-D`,
@@ -195,7 +204,7 @@ export class VMCodeGenerator {
       `M = D`,
 
       // goto return address
-      `@5`,
+      `@6`,
       `D = A`,
       `@R12`,
       `A = M-D`,

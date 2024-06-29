@@ -1,0 +1,5 @@
+
+function main 0
+    push constant 7
+    call febunatchi.feb 1
+    return

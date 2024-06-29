@@ -31,6 +31,8 @@ export class VMTranslator {
       `D = A`,
       `@SP`,
       `M = D`,
+      `@FP`,
+      `M = D`,
       "\n",
       ...codeGen.writePushPop({
         type: VM_INTRUCTION_TYPE.C_PUSH,
@@ -47,8 +49,7 @@ export class VMTranslator {
     this._lines.push(
       // convition for ending the program
       ...codeGen.writeLabel({ label: END_LABEL }),
-      ...codeGen.writeGoto({ label: END_LABEL }),
-      `\n`
+      ...codeGen.writeGoto({ label: END_LABEL })
     );
   }
 
