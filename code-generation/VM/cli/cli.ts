@@ -77,7 +77,7 @@ export class CLI {
 
       translator.translate();
     });
-    translator.end();
+    translator.endDir();
 
     return translator.lines;
   }

@@ -30,7 +30,7 @@ pop temp 2
       "M = M+1",
       "\n",
       "// call Main.main 1",
-      "@VM_BASE$ret.1",
+      "@__VM_BASE__$ret.1",
       "D = A",
       "@SP",
       "A = M",
@@ -78,10 +78,10 @@ pop temp 2
       "M = M-D",
       "@Main.main",
       "0; JMP",
-      "(VM_BASE$ret.1)",
+      "(__VM_BASE__$ret.1)",
       "\n",
-      "// goto VM_BASE$END",
-      "@VM_BASE$END",
+      "// goto __VM_BASE__$__END__",
+      "@__VM_BASE__$__END__",
       "0; JMP",
       "\n",
       `// push constant 10`,
@@ -172,11 +172,11 @@ pop temp 2
       `A = M`,
       `M = D`,
       `\n`,
-      "// label END",
-      "(VM_BASE$END)",
+      "// label __END__",
+      "(__VM_BASE__$__END__)",
       "\n",
-      "// goto VM_BASE$END",
-      "@VM_BASE$END",
+      "// goto __VM_BASE__$__END__",
+      "@__VM_BASE__$__END__",
       "0; JMP",
       `\n`,
     ];
@@ -187,7 +187,7 @@ pop temp 2
     trans.filename = "someFile";
     trans.initDir();
     trans.translate();
-    trans.end();
+    trans.endDir();
 
     expect(trans.lines).toEqual(expected);
   });

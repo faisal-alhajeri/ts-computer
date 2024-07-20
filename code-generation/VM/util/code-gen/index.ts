@@ -7,6 +7,8 @@ import {
 
 const STACK_FRAME_SIZE = 6;
 
+const END_LABEL = "__END__";
+
 /**
  * generates code from VM spec to hack assembly
  */
@@ -17,6 +19,36 @@ export class VMCodeGenerator {
 
   constructor(props: { filename: string }) {
     this.filename = props.filename;
+  }
+
+  initDir(): string[] {
+    // const codeGen = new VMCodeGenerator({ filename: BASE_FILE_NAME });
+    return [
+      //
+      `// init vars`,
+      `@256`,
+      `D = A`,
+      `@SP`,
+      `M = D`,
+      `@FP`,
+      `M = D`,
+      "\n",
+      ...this.writePushPop({
+        type: VM_INTRUCTION_TYPE.C_PUSH,
+        segment: VM_SEGMENT.CONSTANT,
+        index: "0",
+      }),
+      ...this.writeCall({ name: "Main.main", nVars: 1 }),
+      ...this.writeGoto({ label: END_LABEL }),
+    ];
+  }
+
+  endDir(): string[] {
+    return [
+      // convition for ending the program
+      ...this.writeLabel({ label: END_LABEL }),
+      ...this.writeGoto({ label: END_LABEL }),
+    ];
   }
 
   writePushPop({
